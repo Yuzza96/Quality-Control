@@ -1,24 +1,31 @@
-# Quality Control Dashboard
+# QC Dashboard
 
-SaaS-style admin dashboard built with React 18 + Vite and Recharts. Currently runs entirely on dummy data.
+Quality Control dashboard for manufacturing staff: record inspections and nonconformances (NCs), search/filter/export them, and watch quality trends. React 18 + Vite + Recharts. Runs on dummy data; Supabase is planned.
 
 ## Commands
-- `npm run dev` — start Vite dev server (http://localhost:5173)
-- `npm run build` — production build to `dist/`
-- `npm run preview` — serve the production build
+- `npm run dev` — dev server at http://localhost:5173/Quality-Control/ (Vite `base` is `/Quality-Control/` for GitHub Pages)
+- `npm run build` / `npm run preview`
+- Pushing to `main` deploys to GitHub Pages via `.github/workflows/deploy.yml`.
+
+## Pages (sidebar)
+- **Overview** — stat cards (total inspections, pass rate with trend arrow vs last month, open NCs), monthly pass-rate line chart, inspection-status donut. All computed from the records.
+- **Inspection Report** — date, route card, PO#, part, inspector, status (Accepted / On Hold / Rejected), qty OK, qty NG.
+- **NC Report** — NCR no., date, part, defect, qty NG, status (Open / In Progress / Closed), remark.
+- **Coming soon** — Incoming QC, Calibration, Supplier Quality, Audits (placeholder pages).
 
 ## Structure
-- `src/App.jsx` — app shell; holds page state (no router), theme state, global search query
-- `src/components/` — `Sidebar`, `Topbar` (search, theme toggle, profile menu), `StatCard`
-- `src/pages/` — `Overview` (stat cards, line + donut charts, activity table with search/filter), `Customers`, `Placeholder` (Reports, Settings)
-- `src/data/mock.js` — all dummy data; replace with API calls later
-- `src/styles.css` — single stylesheet; theming via CSS variables, `data-theme="dark|light"` on `<html>`
+- `src/App.jsx` — shell; `NAV` list defines pages; holds records in state (no router), theme, global search.
+- `src/data/data.js` — **all dummy data**, status lists, status→badge-tone map, ID helpers. Swap for Supabase here; keep record shapes.
+- `src/components/RecordsPage.jsx` — shared list page (search, status + date-range filters, CSV export, add dialog). Report pages only supply columns, form fields and an `onAdd`.
+- `src/components/` — `Modal` (native `<dialog>`), `RecordForm` (validation), `Sidebar`, `Topbar`, `StatCard`.
+- `src/utils.js` — CSV export, `today()`.
+- `src/styles.css` — single stylesheet; theme via CSS variables with `data-theme="dark|light"` on `<html>`.
 
 ## Conventions
-- One accent color (`--accent`); use the CSS variables, not hard-coded colors, in components.
-- Theme persists in `localStorage` and defaults to the OS preference.
-- Responsive breakpoints: 1100px (charts stack), 800px (sidebar becomes a drawer), 520px (single-column stats).
-- Navigation is state-based; add react-router if real URLs are needed.
-
-## Next steps
-Real data layer, Reports and Settings pages, Customers search/detail, tests.
+- One accent color: teal sampled from the MIT Technologies logo (`#0a7471` light, `#2bb5b0` dark). Green/amber/red are reserved for status badges and chart status colors, so teal ≠ "success".
+- Branding assets live in `public/`: `Logo.png` (original), `logo-tight.png` (cropped, used in the sidebar), `favicon.png`. The logo text is black on transparent, so dark mode shows it on a white chip.
+- **Workflow: commit and push to `main` after every set of changes** (this deploys to GitHub Pages).
+- Recharts needs literal colors, so `Overview.jsx` has a light/dark `COLORS` map that mirrors `styles.css` — update both together.
+- To add a module: add a `NAV` entry in `App.jsx` (`soon: true` shows the placeholder), then render its page.
+- Breakpoints: 1100px (charts stack), 800px (sidebar becomes a drawer), 520px (single-column form).
+- New records are kept in memory only (lost on reload) until the database is connected.

@@ -1,90 +1,89 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { CartesianGrid, Cell, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import StatCard from '../components/StatCard.jsx'
-import { activity, breakdown, monthly, stats } from '../data/mock.js'
+import { INSPECTION_STATUSES } from '../data/data.js'
 
-// One accent color; the donut uses tints of it plus neutrals so status stays readable.
-const DONUT = ['var(--accent)', 'var(--accent-soft-2)', 'var(--danger)', 'var(--neutral)']
-const STATUSES = ['All', 'Passed', 'Rework', 'Failed', 'Pending']
-const tooltipStyle = {
-  background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 12, color: 'var(--text)',
+// Recharts takes literal colors, so keep both themes here (mirrors styles.css).
+const COLORS = {
+  light: { accent: '#0a7471', grid: '#e6e8ef', text: '#6b7280', card: '#ffffff', ink: '#1b1e2b', Accepted: '#16a34a', 'On Hold': '#f59e0b', Rejected: '#ef4444' },
+  dark: { accent: '#2bb5b0', grid: '#272b38', text: '#8b91a3', card: '#181b24', ink: '#e8eaf1', Accepted: '#4ade80', 'On Hold': '#fbbf24', Rejected: '#f87171' },
 }
+const monthName = (ym) => new Date(`${ym}-01T00:00:00`).toLocaleString('en', { month: 'short' })
 
-export default function Overview({ globalQuery = '' }) {
-  const [q, setQ] = useState('')
-  const [status, setStatus] = useState('All')
+export default function Overview({ inspections, ncs, theme }) {
+  const c = COLORS[theme]
 
-  const rows = useMemo(() => {
-    const needle = `${globalQuery} ${q}`.trim().toLowerCase().split(/\s+/).filter(Boolean)
-    return activity.filter((r) =>
-      (status === 'All' || r.status === status) &&
-      needle.every((w) => `${r.id} ${r.item} ${r.owner}`.toLowerCase().includes(w)))
-  }, [q, status, globalQuery])
+  const { stats, trend, split } = useMemo(() => {
+    const ok = inspections.reduce((s, r) => s + r.qtyOk, 0)
+    const ng = inspections.reduce((s, r) => s + r.qtyNg, 0)
+    const passRate = ok + ng ? (ok / (ok + ng)) * 100 : 0
+
+    const byMonth = {}
+    for (const r of inspections) {
+      const m = (byMonth[r.date.slice(0, 7)] ??= { ok: 0, ng: 0 })
+      m.ok += r.qtyOk
+      m.ng += r.qtyNg
+    }
+    const trend = Object.keys(byMonth).sort().map((k) => ({
+      month: monthName(k),
+      rate: Number(((byMonth[k].ok / (byMonth[k].ok + byMonth[k].ng || 1)) * 100).toFixed(1)),
+    }))
+
+    // trend arrow: last full month vs the one before
+    const delta = trend.length > 2 ? trend.at(-1).rate - trend.at(-2).rate : 0
+    const open = ncs.filter((n) => n.status !== 'Closed').length
+
+    return {
+      trend,
+      split: INSPECTION_STATUSES.map((s) => ({ name: s, value: inspections.filter((r) => r.status === s).length })),
+      stats: [
+        { label: 'Total Inspections', value: inspections.length.toLocaleString(), note: `${(ok + ng).toLocaleString()} pcs inspected` },
+        { label: 'Pass Rate', value: `${passRate.toFixed(1)}%`, change: Number(delta.toFixed(1)), hint: 'vs last month' },
+        { label: 'Open NCs', value: String(open), note: `${ncs.filter((n) => n.status === 'In Progress').length} in progress`, warn: open > 0 },
+      ],
+    }
+  }, [inspections, ncs])
+
+  const tooltip = { background: c.card, border: `1px solid ${c.grid}`, borderRadius: 12, color: c.ink }
+  const lo = Math.floor(Math.min(...trend.map((t) => t.rate), 100) - 2)
 
   return (
     <>
-      <h1>Overview</h1>
+      <div className="page-head"><div><h1>Overview</h1><p className="muted">Quality at a glance across all inspections and nonconformances.</p></div></div>
+
       <section className="grid stats">
         {stats.map((s) => <StatCard key={s.label} {...s} />)}
       </section>
 
       <section className="grid charts">
         <div className="card">
-          <h2>Monthly trend</h2>
+          <h2>Pass rate by month</h2>
           <div className="chart">
             <ResponsiveContainer>
-              <LineChart data={monthly} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-                <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="month" stroke="var(--muted)" tickLine={false} axisLine={false} />
-                <YAxis stroke="var(--muted)" tickLine={false} axisLine={false} />
-                <Tooltip contentStyle={tooltipStyle} />
-                <Line type="monotone" dataKey="passed" name="Passed" stroke="var(--accent)" strokeWidth={3} dot={false} />
-                <Line type="monotone" dataKey="failed" name="Failed" stroke="var(--neutral)" strokeWidth={2} strokeDasharray="5 4" dot={false} />
+              <LineChart data={trend} margin={{ top: 8, right: 12, left: -12, bottom: 0 }}>
+                <CartesianGrid stroke={c.grid} strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="month" stroke={c.text} tickLine={false} axisLine={false} />
+                <YAxis stroke={c.text} tickLine={false} axisLine={false} domain={[lo, 100]} unit="%" />
+                <Tooltip contentStyle={tooltip} formatter={(v) => [`${v}%`, 'Pass rate']} />
+                <Line type="monotone" dataKey="rate" stroke={c.accent} strokeWidth={3} dot={{ r: 3, fill: c.accent }} activeDot={{ r: 5 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div className="card">
-          <h2>Breakdown</h2>
+          <h2>Inspection status</h2>
           <div className="chart">
             <ResponsiveContainer>
               <PieChart>
-                <Pie data={breakdown} dataKey="value" nameKey="name" innerRadius="58%" outerRadius="85%" paddingAngle={3} stroke="none">
-                  {breakdown.map((_, i) => <Cell key={i} fill={DONUT[i]} />)}
+                <Pie data={split} dataKey="value" nameKey="name" innerRadius="58%" outerRadius="85%" paddingAngle={3} stroke="none">
+                  {split.map((s) => <Cell key={s.name} fill={c[s.name]} />)}
                 </Pie>
-                <Tooltip contentStyle={tooltipStyle} />
+                <Tooltip contentStyle={tooltip} itemStyle={{ color: c.ink }} />
                 <Legend iconType="circle" />
               </PieChart>
             </ResponsiveContainer>
           </div>
-        </div>
-      </section>
-
-      <section className="card">
-        <div className="table-head">
-          <h2>Recent activity</h2>
-          <div className="filters">
-            <input className="field" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search activity…" />
-            <select className="field" value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Filter by status">
-              {STATUSES.map((s) => <option key={s}>{s}</option>)}
-            </select>
-          </div>
-        </div>
-        <div className="table-wrap">
-          <table>
-            <thead><tr><th>ID</th><th>Item</th><th>Owner</th><th>Status</th><th>Date</th></tr></thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.id}>
-                  <td>{r.id}</td><td>{r.item}</td><td>{r.owner}</td>
-                  <td><span className={`badge ${r.status.toLowerCase()}`}>{r.status}</span></td>
-                  <td className="muted">{r.date}</td>
-                </tr>
-              ))}
-              {rows.length === 0 && <tr><td colSpan="5" className="empty">No matching activity.</td></tr>}
-            </tbody>
-          </table>
         </div>
       </section>
     </>
