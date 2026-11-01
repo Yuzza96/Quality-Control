@@ -37,7 +37,8 @@ export default function Sidebar({ nav, active, open, onNavigate, onClose }) {
       <div className={`scrim ${open ? 'show' : ''}`} onClick={onClose} />
       <aside className={`sidebar ${open ? 'open' : ''}`}>
         <div className="brand">
-          <img src={`${import.meta.env.BASE_URL}logo-tight.png`} alt="MIT Technologies" />
+          <img className="logo-light" src={`${import.meta.env.BASE_URL}logo-tight.png`} alt="MIT Technologies" />
+          <img className="logo-dark" src={`${import.meta.env.BASE_URL}logo-tight-dark.png`} alt="" aria-hidden="true" />
         </div>
         <nav ref={navRef}>
           {pill && (

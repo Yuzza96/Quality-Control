@@ -25,7 +25,7 @@ Quality Control dashboard for manufacturing staff: record inspections and noncon
 
 ## Conventions
 - One accent color: teal sampled from the MIT Technologies logo (`#0a7471` light, `#2bb5b0` dark). Green/amber/red are reserved for status badges and chart status colors, so teal ≠ "success".
-- Branding assets live in `public/`: `Logo.png` (original), `logo-tight.png` (cropped, used in the sidebar), `favicon.png`. The logo text is black on transparent, so dark mode shows it on a white chip.
+- Branding assets live in `public/`: `Logo.png` (original), `logo-tight.png` (cropped, light-mode sidebar), `logo-tight-dark.png` (same logo recolored for dark mode: light wordmark, `#2bb5b0` teal, transparent), `favicon.png`. If the logo changes, regenerate both tight versions.
 - **Workflow: commit and push to `main` after every set of changes** (this deploys to GitHub Pages).
 - Recharts needs literal colors, so `Overview.jsx` has a light/dark `COLORS` map that mirrors `styles.css` — update both together.
 - To add a module: add a `NAV` entry in `App.jsx` (`soon: true` shows the placeholder), then render its page.
