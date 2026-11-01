@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({ plugins: [react()] })
+// Served from https://yuzza96.github.io/Quality-Control/
+export default defineConfig({ base: '/Quality-Control/', plugins: [react()] })
