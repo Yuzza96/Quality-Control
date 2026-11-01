@@ -12,6 +12,7 @@ Quality Control dashboard for manufacturing staff: record inspections and noncon
 - **Inspection Report** — date, route card, PO#, part, inspector, status (Accepted / On Hold / Rejected), qty OK, qty NG.
 - **NC Report** — NCR no., date, part, defect, qty NG, status (Open / In Progress / Closed), remark.
 - **Equipment** — QC equipment inventory (asset tag, name, category, serial, location, last calibrated, next due, status In Service / Due Soon / Out of Service). Dummy status is derived from the due date; `date` holds last-calibrated so the shared date filter works.
+- **Internal Good Transfer Record** — parts moved between departments (transfer no., date, part, qty, from → to, transferred by, status Pending / In Transit / Received / Rejected, remark).
 - **Coming soon** — Incoming QC, Calibration, Supplier Quality, Audits (placeholder pages).
 
 ## Structure

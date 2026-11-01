@@ -13,11 +13,17 @@ export const STATUS_TONE = {
   Open: 'red',
   'In Progress': 'amber',
   Closed: 'green',
+  Pending: 'amber',
+  'In Transit': 'amber',
+  Received: 'green',
+  Rejected: 'red',
   'In Service': 'green',
   'Due Soon': 'amber',
   'Out of Service': 'red',
 }
 
+export const TRANSFER_STATUSES = ['Pending', 'In Transit', 'Received', 'Rejected']
+export const DEPARTMENTS = ['Receiving', 'Warehouse', 'Machining', 'Assembly', 'QC Lab', 'Rework Area', 'Packing']
 export const EQUIPMENT_STATUSES = ['In Service', 'Due Soon', 'Out of Service']
 export const EQUIPMENT_CATEGORIES = ['Dimensional', 'Force / Torque', 'Pressure', 'Electrical', 'Temperature', 'Testing', 'Weighing']
 
@@ -75,6 +81,26 @@ export const ncs = Array.from({ length: 22 }, (_, i) => {
   }
 })
 
+// Internal good transfers: parts moved between departments. Generated after the other seeded data
+// so the existing dummy records stay unchanged.
+export const transfers = Array.from({ length: 26 }, (_, i) => {
+  const age = Math.floor(i * 2.4)
+  const from = pick(DEPARTMENTS)
+  const to = pick(DEPARTMENTS.filter((d) => d !== from))
+  const status = age < 3 ? pick(['Pending', 'In Transit']) : rnd() < 0.08 ? 'Rejected' : 'Received'
+  return {
+    id: `IGT-${pad(526 - i, 4)}`,
+    date: isoDay(age),
+    part: pick(PARTS),
+    qty: 10 * (1 + Math.floor(rnd() * 30)),
+    from,
+    to,
+    transferredBy: pick(INSPECTORS),
+    status,
+    remark: status === 'Rejected' ? 'Quantity mismatch on receipt' : status === 'Pending' ? 'Awaiting pickup' : '',
+  }
+})
+
 // QC equipment inventory. `date` = last calibration (kept as `date` so the shared list page can filter it).
 // Status is derived from the due date relative to the dummy "today" (2026-11-02): overdue gauges are out of service.
 const addDays = (iso, n) => {
@@ -111,6 +137,8 @@ export const equipment = EQUIPMENT_ROWS.map(([name, category, serial, location, 
   return { id: `EQ-${pad(i + 1, 3)}`, name, category, serial, location, date, nextDue, status }
 })
 
+export const nextTransferId = (list) =>
+  `IGT-${pad(Math.max(0, ...list.map((r) => Number(r.id.slice(4)))) + 1, 4)}`
 export const nextEquipmentId = (list) =>
   `EQ-${pad(Math.max(0, ...list.map((r) => Number(r.id.slice(3)))) + 1, 3)}`
 export const nextInspectionId = (list) =>
