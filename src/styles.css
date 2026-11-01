@@ -59,8 +59,8 @@ code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
 .brand { padding: 4px 6px 16px; }
 .brand img { display: block; width: 100%; height: auto; border-radius: 10px; }
 /* the logo wordmark is black, so dark mode uses a recolored copy (light text, brighter teal), both transparent */
-.logo-dark, [data-theme='dark'] .logo-light { display: none; }
-[data-theme='dark'] .logo-dark { display: block; }
+.brand .logo-dark, [data-theme='dark'] .brand .logo-light { display: none; }
+[data-theme='dark'] .brand .logo-dark { display: block; }
 .sidebar nav { display: flex; flex-direction: column; gap: 4px; }
 .nav-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 14px 12px 6px; }
 .nav-item {
