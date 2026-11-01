@@ -13,7 +13,13 @@ export const STATUS_TONE = {
   Open: 'red',
   'In Progress': 'amber',
   Closed: 'green',
+  'In Service': 'green',
+  'Due Soon': 'amber',
+  'Out of Service': 'red',
 }
+
+export const EQUIPMENT_STATUSES = ['In Service', 'Due Soon', 'Out of Service']
+export const EQUIPMENT_CATEGORIES = ['Dimensional', 'Force / Torque', 'Pressure', 'Electrical', 'Temperature', 'Testing', 'Weighing']
 
 export const INSPECTORS = ['Ana Reyes', 'Ben Cruz', 'Cara Lim', 'Dan Ortiz', 'Eli Tan']
 
@@ -69,6 +75,44 @@ export const ncs = Array.from({ length: 22 }, (_, i) => {
   }
 })
 
+// QC equipment inventory. `date` = last calibration (kept as `date` so the shared list page can filter it).
+// Status is derived from the due date relative to the dummy "today" (2026-11-02): overdue gauges are out of service.
+const addDays = (iso, n) => {
+  const d = new Date(`${iso}T00:00:00Z`)
+  d.setUTCDate(d.getUTCDate() + n)
+  return d.toISOString().slice(0, 10)
+}
+// [name, category, serial, location, calibration interval (days), days since last calibration, forced out of service]
+const EQUIPMENT_ROWS = [
+  ['Vernier Caliper 0–150 mm', 'Dimensional', 'MT-150-2291', 'QC Lab', 365, 120],
+  ['Digital Caliper 0–200 mm', 'Dimensional', 'MT-200-5518', 'Line 1', 365, 340],
+  ['Outside Micrometer 0–25 mm', 'Dimensional', 'MIT-25-0734', 'QC Lab', 365, 200],
+  ['Outside Micrometer 25–50 mm', 'Dimensional', 'MIT-50-0735', 'QC Lab', 365, 395],
+  ['Height Gauge 0–300 mm', 'Dimensional', 'HG-300-1180', 'Inspection Room', 365, 90],
+  ['Dial Indicator 0.01 mm', 'Dimensional', 'DI-001-9042', 'Line 2', 180, 60],
+  ['Bore Gauge 18–35 mm', 'Dimensional', 'BG-35-3317', 'Machining', 365, 310],
+  ['Gauge Block Set (87 pcs)', 'Dimensional', 'GB-87-0021', 'Metrology Room', 730, 400],
+  ['Profile Projector', 'Dimensional', 'PP-300-0008', 'Metrology Room', 365, 150],
+  ['Coordinate Measuring Machine', 'Dimensional', 'CMM-7-2204', 'Metrology Room', 365, 45],
+  ['Torque Wrench 10–50 Nm', 'Force / Torque', 'TW-50-6120', 'Assembly', 180, 175],
+  ['Torque Screwdriver 1–6 Nm', 'Force / Torque', 'TS-06-4417', 'Assembly', 180, 210],
+  ['Pressure Gauge 0–10 bar', 'Pressure', 'PG-10-7783', 'Test Bay', 365, 260],
+  ['Digital Multimeter', 'Electrical', 'DMM-87-3350', 'Electrical Shop', 365, 100],
+  ['Digital Thermometer', 'Temperature', 'TH-02-1129', 'QC Lab', 365, 330],
+  ['Hardness Tester (Rockwell)', 'Testing', 'HT-RW-0516', 'Testing Lab', 365, 30],
+  ['Surface Roughness Tester', 'Testing', 'SR-220-0942', 'Testing Lab', 365, 280],
+  ['Precision Balance 0.01 g', 'Weighing', 'PB-200-8861', 'QC Lab', 180, 70],
+]
+export const equipment = EQUIPMENT_ROWS.map(([name, category, serial, location, interval, since], i) => {
+  const date = isoDay(since)
+  const nextDue = addDays(date, interval)
+  const days = (new Date(`${nextDue}T00:00:00Z`) - new Date('2026-11-02T00:00:00Z')) / 86400000
+  const status = days < 0 ? 'Out of Service' : days <= 45 ? 'Due Soon' : 'In Service'
+  return { id: `EQ-${pad(i + 1, 3)}`, name, category, serial, location, date, nextDue, status }
+})
+
+export const nextEquipmentId = (list) =>
+  `EQ-${pad(Math.max(0, ...list.map((r) => Number(r.id.slice(3)))) + 1, 3)}`
 export const nextInspectionId = (list) =>
   `INS-${pad(Math.max(0, ...list.map((r) => Number(r.id.slice(4)))) + 1)}`
 export const nextNcrNo = (list) =>

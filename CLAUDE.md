@@ -11,6 +11,7 @@ Quality Control dashboard for manufacturing staff: record inspections and noncon
 - **Overview** — stat cards (total inspections, pass rate with trend arrow vs last month, open NCs), monthly pass-rate line chart, inspection-status donut. All computed from the records.
 - **Inspection Report** — date, route card, PO#, part, inspector, status (Accepted / On Hold / Rejected), qty OK, qty NG.
 - **NC Report** — NCR no., date, part, defect, qty NG, status (Open / In Progress / Closed), remark.
+- **Equipment** — QC equipment inventory (asset tag, name, category, serial, location, last calibrated, next due, status In Service / Due Soon / Out of Service). Dummy status is derived from the due date; `date` holds last-calibrated so the shared date filter works.
 - **Coming soon** — Incoming QC, Calibration, Supplier Quality, Audits (placeholder pages).
 
 ## Structure
