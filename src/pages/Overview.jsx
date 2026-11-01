@@ -65,7 +65,7 @@ export default function Overview({ inspections, ncs, theme }) {
                 <XAxis dataKey="month" stroke={c.text} tickLine={false} axisLine={false} />
                 <YAxis stroke={c.text} tickLine={false} axisLine={false} domain={[lo, 100]} unit="%" />
                 <Tooltip contentStyle={tooltip} formatter={(v) => [`${v}%`, 'Pass rate']} />
-                <Line type="monotone" dataKey="rate" stroke={c.accent} strokeWidth={3} dot={{ r: 3, fill: c.accent }} activeDot={{ r: 5 }} />
+                <Line type="monotone" dataKey="rate" animationDuration={1000} animationEasing="ease-out" stroke={c.accent} strokeWidth={3} dot={{ r: 3, fill: c.accent }} activeDot={{ r: 5 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -76,7 +76,7 @@ export default function Overview({ inspections, ncs, theme }) {
           <div className="chart">
             <ResponsiveContainer>
               <PieChart>
-                <Pie data={split} dataKey="value" nameKey="name" innerRadius="58%" outerRadius="85%" paddingAngle={3} stroke="none">
+                <Pie data={split} dataKey="value" nameKey="name" innerRadius="58%" outerRadius="85%" paddingAngle={3} stroke="none" animationDuration={900} animationEasing="ease-out">
                   {split.map((s) => <Cell key={s.name} fill={c[s.name]} />)}
                 </Pie>
                 <Tooltip contentStyle={tooltip} itemStyle={{ color: c.ink }} />

@@ -54,10 +54,13 @@ export default function App() {
           onMenu={() => setNavOpen(true)}
         />
         <main className="content">
-          {page === 'overview' && <Overview inspections={inspections} ncs={ncs} theme={theme} />}
-          {page === 'inspection' && <InspectionReport rows={inspections} onAdd={addInspection} globalQuery={query} />}
-          {page === 'nc' && <NcReport rows={ncs} onAdd={addNc} globalQuery={query} />}
-          {current?.soon && <Placeholder title={current.label} />}
+          {/* keyed by page so each navigation replays the enter animation */}
+          <div className="page" key={page}>
+            {page === 'overview' && <Overview inspections={inspections} ncs={ncs} theme={theme} />}
+            {page === 'inspection' && <InspectionReport rows={inspections} onAdd={addInspection} globalQuery={query} />}
+            {page === 'nc' && <NcReport rows={ncs} onAdd={addNc} globalQuery={query} />}
+            {current?.soon && <Placeholder title={current.label} />}
+          </div>
         </main>
       </div>
     </div>

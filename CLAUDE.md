@@ -29,3 +29,8 @@ Quality Control dashboard for manufacturing staff: record inspections and noncon
 - To add a module: add a `NAV` entry in `App.jsx` (`soon: true` shows the placeholder), then render its page.
 - Breakpoints: 1100px (charts stack), 800px (sidebar becomes a drawer), 520px (single-column form).
 - New records are kept in memory only (lost on reload) until the database is connected.
+
+## Motion
+- Easing tokens in `styles.css` (`--ease-out`, `--ease-spring`); the motion block is at the end of the file. Use them for any new interactive element instead of ad-hoc durations.
+- Every button/tab has smooth hover + springy press (`scale(.95)`); sidebar uses one sliding highlight pill (`.nav-pill`, measured in `Sidebar.jsx`); pages replay a staggered rise-in (`.page` is keyed by route in `App.jsx`); dialog and profile menu animate out before unmounting (`Modal.jsx`, `Topbar.jsx`).
+- `prefers-reduced-motion` disables all animation. Animate only `transform`/`opacity`/colors.

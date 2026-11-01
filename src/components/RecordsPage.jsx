@@ -34,7 +34,6 @@ export default function RecordsPage({
 
   function submit(values) {
     const rec = onAdd(values)
-    setOpen(false)
     setNotice(`${rec.id} added`)
     setTimeout(() => setNotice(''), 3500)
   }
@@ -72,7 +71,7 @@ export default function RecordsPage({
             </thead>
             <tbody>
               {filtered.map((r) => (
-                <tr key={r.id}>
+                <tr key={r.id} className="row-in">
                   {columns.map((c) => (
                     <td key={c.key} className={c.num ? 'num' : c.key === 'id' ? 'strong' : ''}>
                       {c.key === 'status' ? <Badge status={r.status} /> : r[c.key] || <span className="muted">—</span>}
@@ -89,7 +88,10 @@ export default function RecordsPage({
 
       {open && (
         <Modal title={addLabel} onClose={() => setOpen(false)}>
-          <RecordForm fields={formFields} initial={formInitial()} submitLabel="Save" onSubmit={submit} onCancel={() => setOpen(false)} />
+          {(close) => (
+            <RecordForm fields={formFields} initial={formInitial()} submitLabel="Save"
+              onSubmit={(v) => { submit(v); close() }} onCancel={close} />
+          )}
         </Modal>
       )}
       {notice && <div className="toast" role="status">{notice}</div>}

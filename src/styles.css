@@ -67,7 +67,8 @@ code { background: var(--accent-soft); padding: 1px 6px; border-radius: 6px; }
   background: none; color: var(--muted); text-align: left; font-weight: 500;
 }
 .nav-item:hover { background: var(--accent-soft); color: var(--text); }
-.nav-item.active { background: var(--accent-soft); color: var(--accent); }
+.nav-item.active { color: var(--accent); }
+.nav-item.active:hover { background: transparent; }
 .nav-item .soon { margin-left: auto; font-size: .65rem; padding: 2px 7px; border-radius: 999px; background: var(--amber-bg); color: var(--amber); font-weight: 600; }
 .scrim { display: none; }
 
@@ -171,9 +172,10 @@ tbody tr:last-child td { border-bottom: 0; }
 
 @media (max-width: 1100px) { .charts { grid-template-columns: 1fr; } }
 @media (max-width: 800px) {
-  .sidebar { position: fixed; z-index: 20; left: 0; transform: translateX(-100%); transition: transform .2s ease; }
-  .sidebar.open { transform: none; }
-  .scrim.show { display: block; position: fixed; inset: 0; background: rgba(0, 0, 0, .4); z-index: 15; }
+  .sidebar { position: fixed; z-index: 20; left: 0; transform: translateX(-100%); transition: transform .45s var(--ease-out), box-shadow .45s var(--ease-out); }
+  .sidebar.open { transform: none; box-shadow: 0 0 48px rgba(0, 0, 0, .25); }
+  .scrim { display: block; position: fixed; inset: 0; background: rgba(0, 0, 0, .4); z-index: 15; opacity: 0; pointer-events: none; transition: opacity .35s var(--ease-out); }
+  .scrim.show { opacity: 1; pointer-events: auto; }
   .menu-btn { display: grid; }
   .topbar, .content { padding-left: 16px; padding-right: 16px; }
   .profile-name { display: none; }
@@ -184,4 +186,105 @@ tbody tr:last-child td { border-bottom: 0; }
   .date-range { width: 100%; }
   .date-range .field { flex: 1; }
 }
-@media (prefers-reduced-motion: reduce) { .sidebar { transition: none; } }
+/* ───────────── motion ───────────── */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);   /* fluid deceleration */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* slight overshoot */
+  --t-fast: 180ms;
+  --t-med: 320ms;
+}
+
+/* theme switch: colors cross-fade instead of snapping */
+body, .sidebar, .topbar, .card, .field, .search, .btn, .icon-btn, .dropdown, .modal, .badge,
+th, td, .nav-item, .nav-label {
+  transition: background-color var(--t-med) var(--ease-out), border-color var(--t-med) var(--ease-out),
+    color var(--t-med) var(--ease-out), box-shadow var(--t-med) var(--ease-out);
+}
+
+/* every clickable thing: smooth hover, springy press */
+.btn, .icon-btn, .nav-item, .avatar-btn, .dropdown button {
+  transition: background-color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out),
+    color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out),
+    transform var(--t-fast) var(--ease-spring), filter var(--t-fast) var(--ease-out);
+}
+.btn:active:not(:disabled), .icon-btn:active, .nav-item:active, .avatar-btn:active { transform: scale(0.95); }
+.dropdown button:active { transform: scale(0.98); }
+@media (hover: hover) {
+  .btn:hover:not(:disabled), .icon-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(20, 24, 40, 0.1); }
+  .btn.ghost:hover { box-shadow: none; }
+  .avatar-btn:hover .avatar { transform: scale(1.08); }
+  .nav-item:hover { transform: translateX(3px); }
+  .nav-item.active:hover { transform: none; }
+}
+.avatar { transition: transform var(--t-med) var(--ease-spring); }
+.nav-item svg { transition: transform var(--t-med) var(--ease-spring); }
+.nav-item:hover svg, .nav-item.active svg { transform: scale(1.12); }
+
+/* sliding nav highlight */
+.sidebar nav { position: relative; }
+.nav-item { position: relative; z-index: 1; }
+.nav-pill {
+  position: absolute; left: 0; right: 0; top: 0; z-index: 0; border-radius: 12px;
+  background: var(--accent-soft); pointer-events: none;
+}
+.nav-pill.animated { transition: transform .5s var(--ease-out), height .5s var(--ease-out); }
+
+/* inputs: soft focus ring */
+.field, .search { transition: border-color var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out), background-color var(--t-med) var(--ease-out); }
+.field:focus, .search:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+
+/* page enter: content rises in, cards stagger */
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+.page > * { animation: rise .6s var(--ease-out) both; }
+.page > :nth-child(2) { animation-delay: 60ms; }
+.page > :nth-child(3) { animation-delay: 120ms; }
+.page > :nth-child(4) { animation-delay: 180ms; }
+.page > .grid { animation: none; } /* grids animate per card below, not as a block */
+.page .grid > .card { animation: rise .6s var(--ease-out) both; }
+.page .stats > .card:nth-child(2) { animation-delay: 70ms; }
+.page .stats > .card:nth-child(3) { animation-delay: 140ms; }
+.page .charts > .card:nth-child(1) { animation-delay: 200ms; }
+.page .charts > .card:nth-child(2) { animation-delay: 270ms; }
+.page > section.card { animation-delay: 340ms; }
+@media (hover: hover) {
+  .stat { transition: transform var(--t-med) var(--ease-out), box-shadow var(--t-med) var(--ease-out), background-color var(--t-med) var(--ease-out), border-color var(--t-med) var(--ease-out); }
+  .stat:hover { transform: translateY(-3px); box-shadow: 0 2px 4px rgba(20, 24, 40, 0.05), 0 16px 32px rgba(20, 24, 40, 0.1); }
+}
+
+/* table rows ease in when they appear (new record, filter change) */
+@keyframes row-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.row-in { animation: row-in .4s var(--ease-out) both; }
+tbody tr { transition: background-color var(--t-fast) var(--ease-out); }
+
+/* theme icon spins in */
+@keyframes spin-in { from { opacity: 0; transform: rotate(-90deg) scale(.5); } to { opacity: 1; transform: none; } }
+.theme-icon { display: grid; animation: spin-in .5s var(--ease-spring) both; }
+
+/* profile dropdown */
+@keyframes pop-in { from { opacity: 0; transform: translateY(-6px) scale(.95); } to { opacity: 1; transform: none; } }
+@keyframes pop-out { to { opacity: 0; transform: translateY(-6px) scale(.95); } }
+.dropdown { transform-origin: top right; animation: pop-in .25s var(--ease-out) both; }
+.dropdown.closing { animation: pop-out .16s ease-in both; pointer-events: none; }
+
+/* dialog */
+@keyframes modal-in { from { opacity: 0; transform: translateY(24px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes modal-out { to { opacity: 0; transform: translateY(12px) scale(.97); } }
+@keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes backdrop-out { to { opacity: 0; } }
+.modal[open] { animation: modal-in .4s var(--ease-out) both; }
+.modal[open]::backdrop { animation: backdrop-in .3s var(--ease-out) both; }
+.modal.closing { animation: modal-out .2s ease-in both; }
+.modal.closing::backdrop { animation: backdrop-out .2s ease-in both; }
+
+/* toast + coming-soon */
+@keyframes toast-in { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
+.toast { animation: toast-in .45s var(--ease-spring) both; }
+
+/* tap highlight off on touch, scroll feels smoother */
+button { -webkit-tap-highlight-color: transparent; }
+html { scroll-behavior: smooth; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
