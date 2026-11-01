@@ -194,12 +194,13 @@ tbody tr:last-child td { border-bottom: 0; }
   --t-med: 320ms;
 }
 
-/* theme switch: colors cross-fade instead of snapping */
-body, .sidebar, .topbar, .card, .field, .search, .btn, .icon-btn, .dropdown, .modal, .badge,
-th, td, .nav-item, .nav-label {
-  transition: background-color var(--t-med) var(--ease-out), border-color var(--t-med) var(--ease-out),
-    color var(--t-med) var(--ease-out), box-shadow var(--t-med) var(--ease-out);
-}
+/* theme switch: circular reveal from the toggle button (see toggleTheme in App.jsx).
+   Per-element color transitions are off while it runs, otherwise the new theme would
+   fade in piecemeal underneath the circle. */
+html.theme-switching *, html.theme-switching *::before, html.theme-switching *::after { transition: none !important; }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 2; }
 
 /* every clickable thing: smooth hover, springy press */
 .btn, .icon-btn, .nav-item, .avatar-btn, .dropdown button {

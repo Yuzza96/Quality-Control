@@ -34,3 +34,4 @@ Quality Control dashboard for manufacturing staff: record inspections and noncon
 - Easing tokens in `styles.css` (`--ease-out`, `--ease-spring`); the motion block is at the end of the file. Use them for any new interactive element instead of ad-hoc durations.
 - Every button/tab has smooth hover + springy press (`scale(.95)`); sidebar uses one sliding highlight pill (`.nav-pill`, measured in `Sidebar.jsx`); pages replay a staggered rise-in (`.page` is keyed by route in `App.jsx`); dialog and profile menu animate out before unmounting (`Modal.jsx`, `Topbar.jsx`).
 - `prefers-reduced-motion` disables all animation. Animate only `transform`/`opacity`/colors.
+- Theme toggle uses a circular reveal from the button (View Transitions API + animated `clip-path`, ~900ms) in both directions. `html.theme-switching` disables per-element transitions while it runs; unsupported browsers / reduced motion switch instantly.

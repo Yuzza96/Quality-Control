@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import Sidebar from './components/Sidebar.jsx'
 import Topbar from './components/Topbar.jsx'
 import Overview from './pages/Overview.jsx'
@@ -39,6 +40,29 @@ export default function App() {
     try { localStorage.setItem('theme', theme) } catch {}
   }, [theme])
 
+  // Circular reveal: the new theme grows out of the toggle button. Only one clip-path animates
+  // (View Transitions API), so nothing re-paints piecemeal. Falls back to an instant switch.
+  const toggleTheme = (e) => {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    const apply = () => { document.documentElement.dataset.theme = next; flushSync(() => setTheme(next)) }
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!document.startViewTransition || reduce) { apply(); return }
+
+    const r = e.currentTarget.getBoundingClientRect()
+    const x = r.left + r.width / 2
+    const y = r.top + r.height / 2
+    const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
+    const root = document.documentElement
+
+    root.classList.add('theme-switching')
+    const t = document.startViewTransition(apply)
+    t.ready.then(() => root.animate(
+      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+      { duration: 900, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' },
+    )).catch(() => {})
+    t.finished.finally(() => root.classList.remove('theme-switching'))
+  }
+
   const addInspection = (rec) => { setInspections((l) => [rec, ...l]); return rec }
   const addNc = (rec) => { setNcs((l) => [rec, ...l]); return rec }
   const current = NAV.find((n) => n.id === page)
@@ -50,7 +74,7 @@ export default function App() {
       <div className="main">
         <Topbar
           query={query} onQuery={setQuery} theme={theme}
-          onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          onToggleTheme={toggleTheme}
           onMenu={() => setNavOpen(true)}
         />
         <main className="content">
