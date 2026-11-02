@@ -8,6 +8,25 @@ export function Badge({ status }) {
   return <span className={`badge ${STATUS_TONE[status] ?? 'amber'}`}>{status}</span>
 }
 
+const dash = <span className="muted">—</span>
+const fmtDate = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+
+// Cell renderer. `kind` on a column opts into richer presentation (used by the Inspection Report).
+function Cell({ c, r }) {
+  const v = r[c.key]
+  if ((c.badge || c.key === 'status') && v) return <Badge status={v} />
+  switch (c.kind) {
+    case 'date': return v ? <span className="date-cell">{fmtDate(v)}</span> : dash
+    case 'rc': return <span className="rc">{v}</span>
+    case 'chip': return v ? <span className="chip">{v}</span> : dash
+    case 'ok': return <span className={`qty ${v ? 'ok' : 'zero'}`}>{v}</span>
+    case 'ng': return <span className={`qty ${v > 0 ? 'ng' : 'zero'}`}>{v}</span>
+    case 'short': return <span className={`qty ${v > 0 ? 'short' : 'zero'}`}>{v}</span>
+    case 'remark': return v ? <span className="remark">{v}</span> : dash
+    default: return v || (c.num && v === 0 ? 0 : dash)
+  }
+}
+
 // Shared list page: search + status/date filters + CSV export + "add" dialog.
 export default function RecordsPage({
   title, subtitle, columns, rows, statuses, globalQuery, csvName, addLabel, formFields, formInitial, onAdd, groups,
@@ -64,22 +83,22 @@ export default function RecordsPage({
           <button className="btn" onClick={() => downloadCsv(csvName, columns, filtered)} disabled={!filtered.length}>Export CSV</button>
         </div>
 
-        <div className="table-wrap">
+        <div className={`table-wrap${groups ? ' rich' : ''}`}>
           <table>
             <thead>
               {groups && (
                 <tr className="group-row">
-                  {groups.map((g, i) => <th key={g.label} colSpan={g.span} className={`group-th g${i % 2}`}>{g.label}</th>)}
+                  {groups.map((g, i) => <th key={g.label} colSpan={g.span} className={`group-th g${i % 2}`}><span>{g.label}</span></th>)}
                 </tr>
               )}
-              <tr>{columns.map((c) => <th key={c.key} className={c.num ? 'num' : ''}>{c.label}</th>)}</tr>
+              <tr>{columns.map((c) => <th key={c.key} className={`${c.num ? 'num' : ''}${c.divider ? ' divider' : ''}`}>{c.label}</th>)}</tr>
             </thead>
             <tbody>
               {filtered.map((r) => (
-                <tr key={r.id} className="row-in">
+                <tr key={r.id} className={`row-in${groups ? ` tone-${STATUS_TONE[r.status]}` : ''}`}>
                   {columns.map((c) => (
-                    <td key={c.key} className={c.num ? 'num' : c.key === 'id' ? 'strong' : ''}>
-                      {(c.badge || c.key === 'status') && r[c.key] ? <Badge status={r[c.key]} /> : r[c.key] || (c.num && r[c.key] === 0 ? 0 : <span className="muted">—</span>)}
+                    <td key={c.key} className={`${c.num ? 'num' : c.key === 'id' ? 'strong' : ''}${c.divider ? ' divider' : ''}`}>
+                      <Cell c={c} r={r} />
                     </td>
                   ))}
                 </tr>

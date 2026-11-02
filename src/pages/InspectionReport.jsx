@@ -4,31 +4,31 @@ import { today } from '../utils.js'
 
 // `date` is Date IN (kept as `date` so the shared date filter works); `status` is the Inspection Status.
 const routeCardColumns = [
-  { key: 'date', label: 'Date IN' },
+  { key: 'date', label: 'Date IN', kind: 'date' },
   { key: 'sender', label: 'Sender by' },
-  { key: 'routeCard', label: 'Route Card' },
+  { key: 'routeCard', label: 'Route Card', kind: 'rc' },
   { key: 'part', label: 'Part Name' },
-  { key: 'partId', label: 'Part ID' },
-  { key: 'po', label: 'PO No' },
-  { key: 'rfm', label: 'RFM No' },
+  { key: 'partId', label: 'Part ID', kind: 'chip' },
+  { key: 'po', label: 'PO No', kind: 'chip' },
+  { key: 'rfm', label: 'RFM No', kind: 'chip' },
   { key: 'model', label: 'Model' },
   { key: 'quantity', label: 'Quantity', num: true },
   { key: 'nextProcess', label: 'Next Process' },
   { key: 'rcStatus', label: 'Status', badge: true },
 ]
 const inspectionColumns = [
-  { key: 'inspectionDate', label: 'Inspection Date' },
+  { key: 'inspectionDate', label: 'Inspection Date', kind: 'date', divider: true },
   { key: 'inspector', label: 'Inspected By.' },
   { key: 'status', label: 'Inspection Status' },
-  { key: 'qtyOk', label: 'Quantity OK', num: true },
-  { key: 'qtyNg', label: 'Quantity NG', num: true },
-  { key: 'short', label: 'Short', num: true },
-  { key: 'ncr', label: 'NCR' },
+  { key: 'qtyOk', label: 'Quantity OK', num: true, kind: 'ok' },
+  { key: 'qtyNg', label: 'Quantity NG', num: true, kind: 'ng' },
+  { key: 'short', label: 'Short', num: true, kind: 'short' },
+  { key: 'ncr', label: 'NCR', kind: 'chip' },
   { key: 'ncrStatus', label: 'NCR Status', badge: true },
   { key: 'rejected', label: 'Rejected', num: true },
   { key: 'finalStatus', label: 'Status', badge: true },
-  { key: 'igt', label: 'IGT No.' },
-  { key: 'remark', label: 'Remark' },
+  { key: 'igt', label: 'IGT No.', kind: 'chip' },
+  { key: 'remark', label: 'Remark', kind: 'remark' },
 ]
 const columns = [...routeCardColumns, ...inspectionColumns]
 const groups = [
