@@ -4,6 +4,8 @@
 
 export const INSPECTION_STATUSES = ['Accepted', 'On Hold', 'Rejected']
 export const NC_STATUSES = ['Open', 'In Progress', 'Closed']
+export const ROUTE_CARD_STATUSES = ['Pending', 'In Progress', 'Completed']
+export const FINAL_STATUSES = ['Open', 'Closed']
 
 // status -> badge tone (green / amber / red)
 export const STATUS_TONE = {
@@ -16,7 +18,7 @@ export const STATUS_TONE = {
   Pending: 'amber',
   'In Transit': 'amber',
   Received: 'green',
-  Rejected: 'red',
+  Completed: 'green',
   'In Service': 'green',
   'Due Soon': 'amber',
   'Out of Service': 'red',
@@ -33,6 +35,8 @@ const PARTS = [
   'Shaft Ø20 x 150', 'Bracket L-type', 'Housing Cover A2', 'Flange DN50', 'Bushing Bronze',
   'Gear Z32 m2', 'Base Plate 200x120', 'Valve Body V1', 'Spacer Ring 30', 'Pin Dowel Ø8',
 ]
+const MODELS = ['MX-100', 'MX-200', 'TR-30', 'TR-45', 'HV-9']
+const NEXT_PROCESSES = ['Machining', 'Assembly', 'Packing', 'Warehouse']
 const DEFECTS = [
   'Oversize diameter', 'Burr on edge', 'Surface scratch', 'Thread damage', 'Wrong hole position',
   'Porosity in casting', 'Flatness out of tolerance', 'Missing chamfer',
@@ -64,6 +68,33 @@ export const inspections = Array.from({ length: 48 }, (_, i) => {
     status,
     qtyOk: total - ng,
     qtyNg: ng,
+  }
+}).map((r, i) => {
+  // Route card information + the rest of the inspection record. Derived from the fields above
+  // (no extra rnd() calls) so the existing dummy data stays unchanged.
+  const partIdx = PARTS.indexOf(r.part)
+  const short = i % 9 === 4 ? 2 + (i % 5) : 0
+  const rejected = r.status === 'Rejected' ? r.qtyNg : 0
+  const ncr = r.qtyNg > 0 && r.status !== 'Accepted' ? `NCR-${pad(322 - (i % 22), 3)}` : ''
+  const age = Math.floor(i * 3.6)
+  const ncrStatus = !ncr ? '' : age > 40 ? 'Closed' : NC_STATUSES[i % 3]
+  return {
+    ...r,
+    sender: INSPECTORS[(i + 2) % INSPECTORS.length],
+    partId: `PN-${pad(1000 + partIdx * 37, 4)}`,
+    rfm: `RFM-${pad(7100 - i * 2, 4)}`,
+    model: MODELS[partIdx % MODELS.length],
+    quantity: r.qtyOk + r.qtyNg + short,
+    nextProcess: r.status === 'Rejected' ? 'Rework Area' : NEXT_PROCESSES[i % NEXT_PROCESSES.length],
+    rcStatus: age < 4 && i % 2 ? 'In Progress' : age < 2 ? 'Pending' : 'Completed',
+    inspectionDate: isoDay(Math.max(0, age - (i % 3 === 0 ? 1 : 0))),
+    short,
+    ncr,
+    ncrStatus,
+    rejected,
+    finalStatus: r.status === 'Accepted' || ncrStatus === 'Closed' ? 'Closed' : 'Open',
+    igt: r.status === 'Accepted' || r.status === 'Rejected' ? `IGT-${pad(526 - (i % 26), 4)}` : '',
+    remark: r.status === 'On Hold' ? 'Awaiting customer concession' : short ? 'Short delivery from sender' : '',
   }
 })
 

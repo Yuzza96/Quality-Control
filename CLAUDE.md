@@ -9,7 +9,7 @@ Quality Control dashboard for manufacturing staff: record inspections and noncon
 
 ## Pages (sidebar)
 - **Overview** — stat cards (total inspections, pass rate with trend arrow vs last month, open NCs), monthly pass-rate line chart, inspection-status donut. All computed from the records.
-- **Inspection Report** — date, route card, PO#, part, inspector, status (Accepted / On Hold / Rejected), qty OK, qty NG.
+- **Inspection Report** — two-section table (grouped header). *Route Card Information*: Date IN (`date`), sender, route card, part name, part ID, PO, RFM, model, quantity, next process, status (Pending / In Progress / Completed). *Inspection Record*: inspection date, inspected by, inspection status (`status`: Accepted / On Hold / Rejected — drives the filter and Overview), qty OK, qty NG, short, NCR, NCR status, rejected, status (Open / Closed), IGT no., remark. `RecordsPage` takes an optional `groups` prop for the grouped header; `RecordForm` supports `type: 'heading'` section titles.
 - **NC Report** — NCR no., date, part, defect, qty NG, status (Open / In Progress / Closed), remark.
 - **Equipment** — QC equipment inventory (asset tag, name, category, serial, location, last calibrated, next due, status In Service / Due Soon / Out of Service). Dummy status is derived from the due date; `date` holds last-calibrated so the shared date filter works.
 - **Internal Good Transfer Record** — parts moved between departments (transfer no., date, part, qty, from → to, transferred by, status Pending / In Transit / Received / Rejected, remark).

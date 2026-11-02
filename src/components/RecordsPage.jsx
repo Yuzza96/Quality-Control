@@ -10,7 +10,7 @@ export function Badge({ status }) {
 
 // Shared list page: search + status/date filters + CSV export + "add" dialog.
 export default function RecordsPage({
-  title, subtitle, columns, rows, statuses, globalQuery, csvName, addLabel, formFields, formInitial, onAdd,
+  title, subtitle, columns, rows, statuses, globalQuery, csvName, addLabel, formFields, formInitial, onAdd, groups,
 }) {
   const [q, setQ] = useState('')
   const [status, setStatus] = useState('All')
@@ -67,6 +67,11 @@ export default function RecordsPage({
         <div className="table-wrap">
           <table>
             <thead>
+              {groups && (
+                <tr className="group-row">
+                  {groups.map((g, i) => <th key={g.label} colSpan={g.span} className={`group-th g${i % 2}`}>{g.label}</th>)}
+                </tr>
+              )}
               <tr>{columns.map((c) => <th key={c.key} className={c.num ? 'num' : ''}>{c.label}</th>)}</tr>
             </thead>
             <tbody>
@@ -74,7 +79,7 @@ export default function RecordsPage({
                 <tr key={r.id} className="row-in">
                   {columns.map((c) => (
                     <td key={c.key} className={c.num ? 'num' : c.key === 'id' ? 'strong' : ''}>
-                      {c.key === 'status' ? <Badge status={r.status} /> : r[c.key] || <span className="muted">—</span>}
+                      {(c.badge || c.key === 'status') && r[c.key] ? <Badge status={r[c.key]} /> : r[c.key] || (c.num && r[c.key] === 0 ? 0 : <span className="muted">—</span>)}
                     </td>
                   ))}
                 </tr>
