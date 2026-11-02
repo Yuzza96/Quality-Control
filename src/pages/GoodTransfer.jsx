@@ -25,7 +25,7 @@ const formFields = [
   { name: 'remark', label: 'Remark', type: 'textarea', wide: true },
 ]
 
-export default function GoodTransfer({ rows, onAdd, globalQuery }) {
+export default function GoodTransfer({ rows, onAdd, onUpdate, globalQuery }) {
   return (
     <RecordsPage
       title="Internal Good Transfer Record"
@@ -38,6 +38,7 @@ export default function GoodTransfer({ rows, onAdd, globalQuery }) {
       addLabel="New Transfer"
       formFields={formFields}
       formInitial={() => ({ date: today(), status: 'Pending', part: '', from: DEPARTMENTS[0], to: DEPARTMENTS[1], qty: '', transferredBy: INSPECTORS[0], remark: '' })}
+      onUpdate={onUpdate}
       onAdd={(v) => onAdd({ id: nextTransferId(rows), ...v })}
     />
   )

@@ -29,13 +29,14 @@ function Cell({ c, r }) {
 
 // Shared list page: search + status/date filters + CSV export + "add" dialog.
 export default function RecordsPage({
-  title, subtitle, columns, rows, statuses, globalQuery, csvName, addLabel, formFields, formInitial, onAdd, groups,
+  title, subtitle, columns, rows, statuses, globalQuery, csvName, addLabel, formFields, formInitial, onAdd, onUpdate, groups,
 }) {
   const [q, setQ] = useState('')
   const [status, setStatus] = useState('All')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [open, setOpen] = useState(false)
+  const [editing, setEditing] = useState(null)
   const [notice, setNotice] = useState('')
 
   const filtered = useMemo(() => {
@@ -56,6 +57,20 @@ export default function RecordsPage({
     setNotice(`${rec.id} added`)
     setTimeout(() => setNotice(''), 3500)
   }
+
+  function update(values) {
+    onUpdate(editing.id, values)
+    setNotice(`${editing.id} updated`)
+    setTimeout(() => setNotice(''), 3500)
+  }
+
+  // pre-fill the form from the clicked record (select/number/text all expect a defined value)
+  const editInitial = (r) => Object.fromEntries(formFields.filter((f) => f.type !== 'heading').map((f) => [f.name, r[f.name] ?? '']))
+  const rowProps = (r) => onUpdate ? {
+    onClick: () => setEditing(r),
+    onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEditing(r) } },
+    tabIndex: 0, role: 'button', title: 'Click to edit',
+  } : {}
 
   return (
     <>
@@ -95,7 +110,7 @@ export default function RecordsPage({
             </thead>
             <tbody>
               {filtered.map((r) => (
-                <tr key={r.id} className={`row-in${groups ? ` tone-${STATUS_TONE[r.status]}` : ''}`}>
+                <tr key={r.id} {...rowProps(r)} className={`row-in${onUpdate ? ' clickable' : ''}${groups ? ` tone-${STATUS_TONE[r.status]}` : ''}`}>
                   {columns.map((c) => (
                     <td key={c.key} className={`${c.num ? 'num' : c.key === 'id' ? 'strong' : ''}${c.divider ? ' divider' : ''}${c.sec ? ` ${c.sec}` : ''}`}>
                       <Cell c={c} r={r} />
@@ -115,6 +130,15 @@ export default function RecordsPage({
           {(close) => (
             <RecordForm fields={formFields} initial={formInitial()} submitLabel="Save"
               onSubmit={(v) => { submit(v); close() }} onCancel={close} />
+          )}
+        </Modal>
+      )}
+      {editing && (
+        <Modal key={editing.id} title={`Edit ${editing.id}`} wide={!!groups}
+          subtitle={groups ? 'Update the record, then save your changes.' : undefined} onClose={() => setEditing(null)}>
+          {(close) => (
+            <RecordForm fields={formFields} initial={editInitial(editing)} submitLabel="Save changes"
+              onSubmit={(v) => { update(v); close() }} onCancel={close} />
           )}
         </Modal>
       )}

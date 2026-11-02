@@ -73,6 +73,7 @@ export default function App() {
   const addNc = (rec) => { setNcs((l) => [rec, ...l]); return rec }
   const addEquipment = (rec) => { setEquipment((l) => [rec, ...l]); return rec }
   const addTransfer = (rec) => { setTransfers((l) => [rec, ...l]); return rec }
+  const updater = (set) => (id, values) => set((l) => l.map((r) => (r.id === id ? { ...r, ...values } : r)))
   const current = NAV.find((n) => n.id === page)
 
   return (
@@ -89,10 +90,10 @@ export default function App() {
           {/* keyed by page so each navigation replays the enter animation */}
           <div className="page" key={page}>
             {page === 'overview' && <Overview inspections={inspections} ncs={ncs} theme={theme} />}
-            {page === 'inspection' && <InspectionReport rows={inspections} onAdd={addInspection} globalQuery={query} />}
-            {page === 'nc' && <NcReport rows={ncs} onAdd={addNc} globalQuery={query} />}
-            {page === 'equipment' && <Equipment rows={equipment} onAdd={addEquipment} globalQuery={query} />}
-            {page === 'transfer' && <GoodTransfer rows={transfers} onAdd={addTransfer} globalQuery={query} />}
+            {page === 'inspection' && <InspectionReport rows={inspections} onAdd={addInspection} onUpdate={updater(setInspections)} globalQuery={query} />}
+            {page === 'nc' && <NcReport rows={ncs} onAdd={addNc} onUpdate={updater(setNcs)} globalQuery={query} />}
+            {page === 'equipment' && <Equipment rows={equipment} onAdd={addEquipment} onUpdate={updater(setEquipment)} globalQuery={query} />}
+            {page === 'transfer' && <GoodTransfer rows={transfers} onAdd={addTransfer} onUpdate={updater(setTransfers)} globalQuery={query} />}
             {current?.soon && <Placeholder title={current.label} />}
           </div>
         </main>

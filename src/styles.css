@@ -354,3 +354,7 @@ html { scroll-behavior: smooth; }
 .req-note b { color: var(--danger); }
 @media (max-width: 860px) { .form-panels { grid-template-columns: 1fr; } }
 @media (max-width: 520px) { .form-body { padding: 14px; } .form-panel .form-grid { grid-template-columns: 1fr; } }
+
+/* clickable rows (open the edit form) */
+tbody tr.clickable { cursor: pointer; }
+tbody tr.clickable:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }

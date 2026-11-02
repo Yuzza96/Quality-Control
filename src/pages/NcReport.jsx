@@ -21,7 +21,7 @@ const formFields = [
   { name: 'remark', label: 'Remark', type: 'textarea', wide: true },
 ]
 
-export default function NcReport({ rows, onAdd, globalQuery }) {
+export default function NcReport({ rows, onAdd, onUpdate, globalQuery }) {
   return (
     <RecordsPage
       title="NC Report"
@@ -34,6 +34,7 @@ export default function NcReport({ rows, onAdd, globalQuery }) {
       addLabel="New NC"
       formFields={formFields}
       formInitial={() => ({ date: today(), status: 'Open', part: '', defect: '', qtyNg: '', remark: '' })}
+      onUpdate={onUpdate}
       onAdd={(v) => onAdd({ id: nextNcrNo(rows), ...v })}
     />
   )

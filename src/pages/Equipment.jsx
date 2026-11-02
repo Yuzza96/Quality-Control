@@ -23,7 +23,7 @@ const formFields = [
   { name: 'nextDue', label: 'Next Due', type: 'date', required: true },
 ]
 
-export default function Equipment({ rows, onAdd, globalQuery }) {
+export default function Equipment({ rows, onAdd, onUpdate, globalQuery }) {
   return (
     <RecordsPage
       title="Equipment"
@@ -36,6 +36,7 @@ export default function Equipment({ rows, onAdd, globalQuery }) {
       addLabel="New Equipment"
       formFields={formFields}
       formInitial={() => ({ name: '', category: EQUIPMENT_CATEGORIES[0], serial: '', location: '', status: 'In Service', date: today(), nextDue: '' })}
+      onUpdate={onUpdate}
       onAdd={(v) => onAdd({ id: nextEquipmentId(rows), ...v })}
     />
   )

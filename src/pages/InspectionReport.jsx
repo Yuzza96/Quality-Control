@@ -67,7 +67,7 @@ const formFields = [
   { name: 'remark', label: 'Remark', type: 'textarea', wide: true },
 ]
 
-export default function InspectionReport({ rows, onAdd, globalQuery }) {
+export default function InspectionReport({ rows, onAdd, onUpdate, globalQuery }) {
   return (
     <RecordsPage
       title="Inspection Report"
@@ -86,6 +86,7 @@ export default function InspectionReport({ rows, onAdd, globalQuery }) {
         inspectionDate: today(), inspector: INSPECTORS[0], status: 'Accepted', qtyOk: '', qtyNg: '0', short: '0', rejected: '0',
         ncr: '', ncrStatus: '', finalStatus: 'Open', igt: '', remark: '',
       })}
+      onUpdate={onUpdate}
       onAdd={(v) => onAdd({ id: nextInspectionId(rows), ...v })}
     />
   )
