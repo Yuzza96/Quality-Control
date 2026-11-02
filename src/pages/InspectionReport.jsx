@@ -30,7 +30,10 @@ const inspectionColumns = [
   { key: 'igt', label: 'IGT No.', kind: 'chip' },
   { key: 'remark', label: 'Remark', kind: 'remark' },
 ]
-const columns = [...routeCardColumns, ...inspectionColumns]
+const columns = [
+  ...routeCardColumns.map((c) => ({ ...c, sec: 's1' })),
+  ...inspectionColumns.map((c) => ({ ...c, sec: 's2' })),
+]
 const groups = [
   { label: 'Route Card Information', span: routeCardColumns.length },
   { label: 'Inspection Record', span: inspectionColumns.length },

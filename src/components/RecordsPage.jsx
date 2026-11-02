@@ -91,13 +91,13 @@ export default function RecordsPage({
                   {groups.map((g, i) => <th key={g.label} colSpan={g.span} className={`group-th g${i % 2}`}><span>{g.label}</span></th>)}
                 </tr>
               )}
-              <tr>{columns.map((c) => <th key={c.key} className={`${c.num ? 'num' : ''}${c.divider ? ' divider' : ''}`}>{c.label}</th>)}</tr>
+              <tr>{columns.map((c) => <th key={c.key} className={`${c.num ? 'num' : ''}${c.divider ? ' divider' : ''}${c.sec ? ` ${c.sec}` : ''}`}>{c.label}</th>)}</tr>
             </thead>
             <tbody>
               {filtered.map((r) => (
                 <tr key={r.id} className={`row-in${groups ? ` tone-${STATUS_TONE[r.status]}` : ''}`}>
                   {columns.map((c) => (
-                    <td key={c.key} className={`${c.num ? 'num' : c.key === 'id' ? 'strong' : ''}${c.divider ? ' divider' : ''}`}>
+                    <td key={c.key} className={`${c.num ? 'num' : c.key === 'id' ? 'strong' : ''}${c.divider ? ' divider' : ''}${c.sec ? ` ${c.sec}` : ''}`}>
                       <Cell c={c} r={r} />
                     </td>
                   ))}

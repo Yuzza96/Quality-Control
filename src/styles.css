@@ -297,22 +297,28 @@ html { scroll-behavior: smooth; }
 .table-wrap.rich { max-height: 70vh; overflow: auto; border: 1px solid var(--border); border-radius: 12px; }
 .rich table { min-width: 2100px; border-collapse: separate; border-spacing: 0; }
 .rich th, .rich td { border-bottom: 1px solid var(--border); }
-.rich thead th { position: sticky; z-index: 2; background: var(--card); text-transform: uppercase; letter-spacing: .04em; font-size: .7rem; font-weight: 600; color: var(--muted); box-shadow: 0 1px 0 var(--border); border-bottom: 0; }
-.rich thead tr:first-child th { top: 0; height: 38px; padding: 6px 10px; }
-.rich thead tr:nth-child(2) th { top: 38px; }
-.rich thead th.group-th { text-align: left; font-size: .8rem; letter-spacing: .02em; text-transform: none; font-weight: 700; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--card)); border-top: 3px solid var(--accent); }
-.rich thead th.group-th.g1 { color: var(--text); background: color-mix(in srgb, var(--text) 7%, var(--card)); border-top-color: var(--text); }
-.rich thead tr:nth-child(2) th:not(.divider) { background: color-mix(in srgb, var(--text) 3%, var(--card)); }
-.rich th.divider, .rich td.divider { border-left: 2px solid color-mix(in srgb, var(--accent) 45%, var(--border)); }
-.rich tbody tr:nth-child(even) { background: color-mix(in srgb, var(--text) 3%, transparent); }
-.rich tbody tr:hover { background: var(--accent-soft); }
+.rich { --s1: #0a7471; --s2: #4338ca; }
+[data-theme='dark'] .rich { --s1: #1f8f8a; --s2: #6366f1; }
+.rich thead th { position: sticky; z-index: 2; text-transform: uppercase; letter-spacing: .04em; font-size: .72rem; font-weight: 700; color: #fff; border-bottom: 0; }
+.rich thead th.s1 { background: var(--s1); }
+.rich thead th.s2 { background: var(--s2); }
+.rich thead tr:first-child th { top: 0; height: 40px; padding: 6px 12px; font-size: .85rem; letter-spacing: .03em; box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .25); }
+.rich thead th.group-th { text-align: left; }
+.rich thead th.group-th.g0 { background: color-mix(in srgb, var(--s1) 78%, #000); }
+.rich thead th.group-th.g1 { background: color-mix(in srgb, var(--s2) 78%, #000); }
+.rich thead tr:nth-child(2) th { top: 40px; padding: 11px 10px; }
+.rich th.divider, .rich td.divider { border-left: 3px solid var(--s2); }
+.rich td.s1 { background-color: color-mix(in srgb, var(--s1) 6%, transparent); }
+.rich td.s2 { background-color: color-mix(in srgb, var(--s2) 7%, transparent); }
+.rich tbody tr:nth-child(even) td { background-image: linear-gradient(color-mix(in srgb, var(--text) 4%, transparent), color-mix(in srgb, var(--text) 4%, transparent)); }
+.rich tbody tr:hover td { background-image: linear-gradient(var(--accent-soft), var(--accent-soft)); }
 .rich tbody td { padding: 11px 10px; }
 .rich tbody tr:last-child td { border-bottom: 0; }
 .rich td:first-child { box-shadow: inset 3px 0 0 transparent; }
 .rich tr.tone-red td:first-child { box-shadow: inset 3px 0 0 var(--red); }
 .rich tr.tone-amber td:first-child { box-shadow: inset 3px 0 0 var(--amber); }
 .rich .badge::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; margin-right: 6px; vertical-align: 1px; }
-.rc { font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.rc { font-weight: 700; color: var(--s1, var(--accent)); font-variant-numeric: tabular-nums; }
 .date-cell { font-variant-numeric: tabular-nums; }
 .chip { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-size: .78rem; padding: 2px 7px; border-radius: 6px; background: color-mix(in srgb, var(--text) 7%, transparent); }
 .qty { display: inline-block; min-width: 34px; padding: 2px 8px; border-radius: 8px; font-weight: 600; text-align: center; }
