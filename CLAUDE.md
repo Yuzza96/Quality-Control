@@ -18,7 +18,7 @@ Quality Control dashboard for manufacturing staff: record inspections and noncon
 ## Structure
 - `src/App.jsx` — shell; `NAV` list defines pages; holds records in state (no router), theme, global search.
 - `src/data/data.js` — **all dummy data**, status lists, status→badge-tone map, ID helpers. Swap for Supabase here; keep record shapes.
-- `src/components/RecordsPage.jsx` — shared list page (search, status + date-range filters, CSV export, add dialog). Rows are clickable (mouse or Enter/Space) and open the same form pre-filled to edit; pages pass `onUpdate(id, values)` from `App.jsx`. Report pages only supply columns, form fields and an `onAdd`.
+- `src/components/RecordsPage.jsx` — shared list page (search, status + date-range filters, CSV export, add dialog). Rows are clickable (mouse or Enter/Space) and open the record read-only; "Edit record" unlocks the same form pre-filled; pages pass `onUpdate(id, values)` from `App.jsx`. Report pages only supply columns, form fields and an `onAdd`.
 - `src/components/` — `Modal` (native `<dialog>`), `RecordForm` (validation), `Sidebar`, `Topbar`, `StatCard`.
 - `src/utils.js` — CSV export, `today()`.
 - `src/styles.css` — single stylesheet; theme via CSS variables with `data-theme="dark|light"` on `<html>`.

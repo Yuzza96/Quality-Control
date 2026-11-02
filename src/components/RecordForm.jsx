@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 // fields: [{ name, label, type: 'text'|'date'|'number'|'select'|'textarea', options, required, wide }]
-export default function RecordForm({ fields, initial, submitLabel, onSubmit, onCancel }) {
+export default function RecordForm({ fields, initial, submitLabel, onSubmit, onCancel, readOnly, onEdit }) {
   const [values, setValues] = useState(initial)
   const [errors, setErrors] = useState({})
 
@@ -51,24 +51,33 @@ export default function RecordForm({ fields, initial, submitLabel, onSubmit, onC
 
   return (
     <form onSubmit={submit} noValidate className={sectioned ? 'sectioned' : ''}>
-      <div className={sectioned ? 'form-body' : ''}>
+      <div className={`${sectioned ? 'form-body' : ''}${readOnly ? ' readonly' : ''}`}>
         {sectioned ? (
           <div className="form-panels">
             {sections.map((sec, i) => (
-              <fieldset key={sec.heading?.label ?? i} className={`form-panel ${sec.heading?.tone ?? ''}`}>
+              <fieldset key={sec.heading?.label ?? i} disabled={readOnly} className={`form-panel ${sec.heading?.tone ?? ''}`}>
                 <legend className="panel-head"><i>{i + 1}</i>{sec.heading?.label}</legend>
                 <div className="form-grid">{sec.fields.map(renderField)}</div>
               </fieldset>
             ))}
           </div>
         ) : (
-          <div className="form-grid">{inputs.map(renderField)}</div>
+          <fieldset disabled={readOnly} className="plain-fs"><div className="form-grid">{inputs.map(renderField)}</div></fieldset>
         )}
       </div>
       <div className="form-actions">
-        {sectioned && <span className="req-note"><b>*</b> Required field</span>}
-        <button type="button" className="btn" onClick={onCancel}>Cancel</button>
-        <button type="submit" className="btn primary">{submitLabel}</button>
+        {sectioned && <span className="req-note">{readOnly ? 'Read only — press Edit record to make changes' : <><b>*</b> Required field</>}</span>}
+        {readOnly ? (
+          <>
+            <button key="close" type="button" className="btn" onClick={onCancel}>Close</button>
+            <button key="edit" type="button" className="btn primary" onClick={onEdit}>Edit record</button>
+          </>
+        ) : (
+          <>
+            <button key="cancel" type="button" className="btn" onClick={onCancel}>Cancel</button>
+            <button key="save" type="submit" className="btn primary">{submitLabel}</button>
+          </>
+        )}
       </div>
     </form>
   )

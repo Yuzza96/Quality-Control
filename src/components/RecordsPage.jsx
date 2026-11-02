@@ -37,6 +37,7 @@ export default function RecordsPage({
   const [to, setTo] = useState('')
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState(null)
+  const [mode, setMode] = useState('view') // opened records are read-only until the user chooses to edit
   const [notice, setNotice] = useState('')
 
   const filtered = useMemo(() => {
@@ -67,9 +68,9 @@ export default function RecordsPage({
   // pre-fill the form from the clicked record (select/number/text all expect a defined value)
   const editInitial = (r) => Object.fromEntries(formFields.filter((f) => f.type !== 'heading').map((f) => [f.name, r[f.name] ?? '']))
   const rowProps = (r) => onUpdate ? {
-    onClick: () => setEditing(r),
-    onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEditing(r) } },
-    tabIndex: 0, role: 'button', title: 'Click to edit',
+    onClick: () => { setMode('view'); setEditing(r) },
+    onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setMode('view'); setEditing(r) } },
+    tabIndex: 0, role: 'button', title: 'Click to view or edit',
   } : {}
 
   return (
@@ -134,11 +135,12 @@ export default function RecordsPage({
         </Modal>
       )}
       {editing && (
-        <Modal key={editing.id} title={`Edit ${editing.id}`} wide={!!groups}
-          subtitle={groups ? 'Update the record, then save your changes.' : undefined} onClose={() => setEditing(null)}>
+        <Modal key={editing.id} title={mode === 'edit' ? `Edit ${editing.id}` : editing.id} wide={!!groups}
+          subtitle={groups ? (mode === 'edit' ? 'Update the record, then save your changes.' : 'Record details') : undefined} onClose={() => setEditing(null)}>
           {(close) => (
-            <RecordForm fields={formFields} initial={editInitial(editing)} submitLabel="Save changes"
-              onSubmit={(v) => { update(v); close() }} onCancel={close} />
+            <RecordForm key={mode} fields={formFields} initial={editInitial(editing)} submitLabel="Save changes"
+              readOnly={mode === 'view'} onEdit={() => setMode('edit')}
+              onSubmit={(v) => { update(v); close() }} onCancel={mode === 'edit' ? () => setMode('view') : close} />
           )}
         </Modal>
       )}
