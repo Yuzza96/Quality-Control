@@ -111,7 +111,7 @@ export default function RecordsPage({
       </section>
 
       {open && (
-        <Modal title={addLabel} onClose={() => setOpen(false)}>
+        <Modal title={addLabel} wide={!!groups} subtitle={groups ? 'Fill in the route card details, then record the inspection result.' : undefined} onClose={() => setOpen(false)}>
           {(close) => (
             <RecordForm fields={formFields} initial={formInitial()} submitLabel="Save"
               onSubmit={(v) => { submit(v); close() }} onCancel={close} />

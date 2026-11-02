@@ -40,19 +40,19 @@ const groups = [
 ]
 
 const formFields = [
-  { type: 'heading', label: 'Route Card Information' },
+  { type: 'heading', label: 'Route Card Information', tone: 's1' },
   { name: 'date', label: 'Date IN', type: 'date', required: true },
   { name: 'sender', label: 'Sender by', type: 'select', options: INSPECTORS },
-  { name: 'routeCard', label: 'Route Card', type: 'text', required: true },
-  { name: 'po', label: 'PO No', type: 'text', required: true },
+  { name: 'routeCard', label: 'Route Card', type: 'text', required: true, placeholder: 'RC-0000' },
+  { name: 'po', label: 'PO No', type: 'text', required: true, placeholder: 'PO-00000' },
   { name: 'part', label: 'Part Name', type: 'text', required: true, wide: true },
   { name: 'partId', label: 'Part ID', type: 'text' },
-  { name: 'rfm', label: 'RFM No', type: 'text' },
+  { name: 'rfm', label: 'RFM No', type: 'text', placeholder: 'RFM-0000' },
   { name: 'model', label: 'Model', type: 'text' },
   { name: 'quantity', label: 'Quantity', type: 'number', required: true },
   { name: 'nextProcess', label: 'Next Process', type: 'text' },
   { name: 'rcStatus', label: 'Status', type: 'select', options: ROUTE_CARD_STATUSES },
-  { type: 'heading', label: 'Inspection Record' },
+  { type: 'heading', label: 'Inspection Record', tone: 's2' },
   { name: 'inspectionDate', label: 'Inspection Date', type: 'date', required: true },
   { name: 'inspector', label: 'Inspected By.', type: 'select', options: INSPECTORS },
   { name: 'status', label: 'Inspection Status', type: 'select', options: INSPECTION_STATUSES },
@@ -60,10 +60,10 @@ const formFields = [
   { name: 'qtyNg', label: 'Quantity NG', type: 'number', required: true },
   { name: 'short', label: 'Short', type: 'number' },
   { name: 'rejected', label: 'Rejected', type: 'number' },
-  { name: 'ncr', label: 'NCR', type: 'text' },
+  { name: 'ncr', label: 'NCR', type: 'text', placeholder: 'NCR-000' },
   { name: 'ncrStatus', label: 'NCR Status', type: 'select', options: ['', ...NC_STATUSES] },
   { name: 'finalStatus', label: 'Status', type: 'select', options: FINAL_STATUSES },
-  { name: 'igt', label: 'IGT No.', type: 'text' },
+  { name: 'igt', label: 'IGT No.', type: 'text', placeholder: 'IGT-0000' },
   { name: 'remark', label: 'Remark', type: 'textarea', wide: true },
 ]
 
