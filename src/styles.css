@@ -334,39 +334,25 @@ html { scroll-behavior: smooth; }
 .modal.wide { width: min(1000px, calc(100vw - 32px)); max-height: calc(100vh - 40px); padding: 0; overflow: auto; }
 .modal.wide .modal-head { position: sticky; top: 0; z-index: 3; margin: 0; padding: 18px 24px; background: var(--card); border-bottom: 1px solid var(--border); }
 .modal.wide .modal-head p { margin: 2px 0 0; font-size: .82rem; }
-/* flat + liquid: solid fills, no shadows/gradients; organic blobs and a flowing wave edge provide the fluid feel */
-.modal.wide { border-radius: 28px; }
-.form-body { position: relative; overflow: hidden; padding: 26px; background: var(--bg); }
-.form-body::before, .form-body::after { content: ''; position: absolute; z-index: 0; pointer-events: none; animation: blob 18s ease-in-out infinite; }
-.form-body::before { width: 340px; height: 340px; left: -110px; top: -120px; background: color-mix(in srgb, var(--s1) 15%, var(--bg)); }
-.form-body::after { width: 400px; height: 400px; right: -130px; bottom: -150px; background: color-mix(in srgb, var(--s2) 14%, var(--bg)); animation-duration: 24s; animation-direction: reverse; }
-@keyframes blob {
-  0%, 100% { border-radius: 42% 58% 63% 37% / 45% 38% 62% 55%; transform: translate(0, 0) rotate(0deg); }
-  33% { border-radius: 63% 37% 45% 55% / 38% 60% 40% 62%; transform: translate(24px, 14px) rotate(20deg); }
-  66% { border-radius: 38% 62% 55% 45% / 60% 42% 58% 40%; transform: translate(-14px, 26px) rotate(-14deg); }
-}
-.form-panels { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
-.form-panel { --sec: var(--accent); margin: 0; padding: 0; min-width: 0; border: 0; border-radius: 28px; background: var(--card); }
+/* professional flat form: neutral surfaces, 1px hairlines, tight radii, one accent per section; motion limited to smooth transitions */
+.modal.wide { border-radius: 14px; }
+.form-body { padding: 24px; background: color-mix(in srgb, var(--text) 3.5%, var(--bg)); }
+.form-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.form-panel { --sec: var(--accent); margin: 0; padding: 0; min-width: 0; border: 1px solid var(--border); border-radius: 10px; background: var(--card); }
 .form-panel.s1 { --sec: var(--s1); }
 .form-panel.s2 { --sec: var(--s2); }
-.form-panel .form-grid { clear: both; padding: 30px 22px 24px; gap: 16px 14px; }
-.panel-head { position: relative; float: left; width: 100%; display: flex; align-items: center; gap: 12px; padding: 16px 22px 14px; margin: 0; font-weight: 700; font-size: 1rem; color: var(--sec); background: color-mix(in srgb, var(--sec) 13%, var(--card)); border-radius: 28px 28px 0 0; }
-.panel-head::after { content: ''; position: absolute; left: 0; right: 0; top: 100%; height: 12px; margin-top: -1px; background: color-mix(in srgb, var(--sec) 13%, var(--card));
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='12'%3E%3Cpath d='M0 0H60V6Q45 14 30 6T0 6Z'/%3E%3C/svg%3E") repeat-x 0 0 / 60px 12px;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='12'%3E%3Cpath d='M0 0H60V6Q45 14 30 6T0 6Z'/%3E%3C/svg%3E") repeat-x 0 0 / 60px 12px;
-  animation: wave 6s linear infinite; }
-@keyframes wave { to { -webkit-mask-position: 60px 0; mask-position: 60px 0; } }
-.panel-head i { display: grid; place-items: center; width: 32px; height: 32px; background: var(--sec); color: #fff; font-style: normal; font-size: .82rem; border-radius: 42% 58% 63% 37% / 45% 38% 62% 55%; animation: blob 12s ease-in-out infinite; }
-.sectioned .form-field { gap: 6px; font-size: .78rem; font-weight: 600; color: var(--muted); }
-.sectioned .field { background: color-mix(in srgb, var(--text) 5%, var(--card)); border: 0; border-radius: 16px; padding: 11px 15px; font-weight: 500; font-size: .9rem; color: var(--text); outline: 2px solid transparent; outline-offset: -2px; transition: background-color .3s var(--ease-out), outline-color .3s var(--ease-out), border-radius .45s var(--ease-spring); }
-.sectioned .field::placeholder { color: var(--muted); opacity: .6; font-weight: 400; }
-.sectioned .field:hover { background: color-mix(in srgb, var(--sec, var(--accent)) 9%, var(--card)); }
-.form-panel .field:focus { background: var(--card); outline-color: var(--sec); border-radius: 22px; box-shadow: none; }
-.sectioned select.field { appearance: none; padding-right: 36px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%238b91a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 15px center; }
-.sectioned .form-field.invalid .field { outline-color: var(--danger); background: var(--red-bg); }
-.sectioned .form-actions { position: sticky; bottom: 0; z-index: 2; margin: 0; padding: 14px 26px; align-items: center; background: var(--card); border-top: 0; }
-.sectioned .form-actions .btn { border-radius: 999px; padding-inline: 22px; }
-@media (prefers-reduced-motion: reduce) { .form-body::before, .form-body::after, .panel-head::after, .panel-head i { animation: none; } }
+.form-panel .form-grid { clear: both; padding: 20px; gap: 16px 16px; }
+.panel-head { float: left; width: 100%; display: flex; align-items: center; gap: 10px; padding: 13px 20px; margin: 0; font-weight: 700; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text); background: color-mix(in srgb, var(--text) 4%, var(--card)); border-bottom: 1px solid var(--border); border-radius: 9px 9px 0 0; }
+.panel-head i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--sec); color: #fff; font-style: normal; font-size: .72rem; letter-spacing: 0; }
+.sectioned .form-field { gap: 6px; font-size: .75rem; font-weight: 600; color: var(--muted); }
+.sectioned .form-field b { color: var(--danger); }
+.sectioned .field { background: var(--card); border: 1px solid color-mix(in srgb, var(--text) 18%, var(--border)); border-radius: 6px; padding: 9px 12px; font-weight: 500; font-size: .9rem; color: var(--text); transition: border-color .25s var(--ease-out), box-shadow .25s var(--ease-out), background-color .25s var(--ease-out); }
+.sectioned .field::placeholder { color: var(--muted); opacity: .55; font-weight: 400; }
+.sectioned .field:hover { border-color: color-mix(in srgb, var(--sec, var(--accent)) 50%, var(--border)); }
+.form-panel .field:focus { border-color: var(--sec); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sec) 18%, transparent); }
+.sectioned select.field { appearance: none; padding-right: 32px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%238b91a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+.sectioned .form-field.invalid .field { border-color: var(--danger); background: var(--red-bg); }
+.sectioned .form-actions { position: sticky; bottom: 0; z-index: 2; margin: 0; padding: 14px 24px; align-items: center; background: var(--card); border-top: 1px solid var(--border); }
 .req-note { margin-right: auto; font-size: .78rem; color: var(--muted); }
 .req-note b { color: var(--danger); }
 @media (max-width: 860px) { .form-panels { grid-template-columns: 1fr; } }
