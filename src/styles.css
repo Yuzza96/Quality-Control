@@ -352,10 +352,10 @@ tbody tr.clickable:focus-visible { outline: 2px solid var(--accent); outline-off
 
 /* ═════════════ iOS 26 "Liquid Glass" ═════════════
    Material = translucent fill + heavy backdrop blur/saturation + specular edge light (inset highlights and a gradient rim)
-   + soft coloured drop shadow, floating over a vivid wallpaper. Small controls are capsules; surfaces use concentric radii.
+   + soft coloured drop shadow, floating over a neutral wallpaper with a giant blurred logo. Small controls are capsules; surfaces use concentric radii.
    Order matters: this section overrides the base tokens above, and the dark block must stay after :root. */
 :root {
-  --bg: #dbe6f6;
+  --bg: #dfe3ea;
   --card: rgba(255, 255, 255, .46);
   --text: #0c1424;
   --muted: #4f5d75;
@@ -381,11 +381,11 @@ tbody tr.clickable:focus-visible { outline: 2px solid var(--accent); outline-off
   --edge: rgba(255, 255, 255, .6);
   --scrim: rgba(14, 22, 48, .3);
   --ring: rgba(255, 255, 255, .22);
-  --wall-1: rgba(96, 176, 255, .85); --wall-2: rgba(176, 150, 255, .8); --wall-3: rgba(70, 226, 200, .7); --wall-4: rgba(255, 184, 150, .7);
+  --ground-a: #f5f7fa; --ground-b: #e0e4eb; --ground-c: #cdd3dd; --logo-tint: rgba(10, 138, 134, .36); --sweep: rgba(255, 255, 255, .85);
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', Inter, 'Segoe UI', system-ui, sans-serif;
 }
 [data-theme='dark'] {
-  --bg: #070b14;
+  --bg: #080a0f;
   --card: rgba(34, 44, 72, .42);
   --text: #f3f6fc;
   --muted: #9ba8c0;
@@ -408,24 +408,31 @@ tbody tr.clickable:focus-visible { outline: 2px solid var(--accent); outline-off
   --edge: rgba(255, 255, 255, .16);
   --scrim: rgba(0, 4, 14, .5);
   --ring: rgba(255, 255, 255, .07);
-  --wall-1: rgba(14, 116, 144, .6); --wall-2: rgba(79, 70, 229, .55); --wall-3: rgba(15, 118, 110, .5); --wall-4: rgba(124, 58, 237, .4);
+  --ground-a: #161b24; --ground-b: #0b0e14; --ground-c: #05070a; --logo-tint: rgba(60, 201, 195, .3); --sweep: rgba(255, 255, 255, .5);
 }
 
-/* wallpaper: drifting colour fields + film grain, behind everything so the glass has something to refract */
+/* wallpaper: neutral grey ground + one giant blurred company logo (teal, faded) + a slow light sweep across it + film grain.
+   Everything sits behind the glass so the panels have shapes to refract. */
 html { background: var(--bg); }
-body { background: transparent; -webkit-font-smoothing: antialiased; letter-spacing: -.011em; }
-body::before {
-  content: ''; position: fixed; inset: -15%; z-index: -2; pointer-events: none;
+html::before {
+  content: ''; position: fixed; inset: 0; z-index: -3; pointer-events: none;
   background:
-    radial-gradient(38% 42% at 18% 18%, var(--wall-1), transparent 70%),
-    radial-gradient(34% 40% at 82% 12%, var(--wall-2), transparent 70%),
-    radial-gradient(40% 44% at 76% 82%, var(--wall-3), transparent 70%),
-    radial-gradient(34% 38% at 12% 84%, var(--wall-4), transparent 70%),
     repeating-radial-gradient(circle at 64% 36%, transparent 0 46px, var(--ring) 46px 48px),
-    repeating-radial-gradient(circle at 20% 78%, transparent 0 62px, var(--ring) 62px 64px);
-  animation: wall 45s ease-in-out infinite alternate;
+    repeating-radial-gradient(circle at 20% 78%, transparent 0 62px, var(--ring) 62px 64px),
+    radial-gradient(120% 90% at 50% 0%, var(--ground-a), var(--ground-b) 60%, var(--ground-c));
 }
-@keyframes wall { to { transform: translate3d(3%, -2%, 0) rotate(6deg) scale(1.08); } }
+body { background: transparent; -webkit-font-smoothing: antialiased; letter-spacing: -.011em; }
+body::before, html::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none;
+  -webkit-mask: url('/logo-tight.png') center / min(106vw, 230vh) auto no-repeat; mask: url('/logo-tight.png') center / min(106vw, 230vh) auto no-repeat;
+  filter: blur(9px);
+}
+body::before { z-index: -2; background: var(--logo-tint); }
+html::after {
+  z-index: -1; background: linear-gradient(110deg, transparent 0 43%, var(--sweep) 50%, transparent 57% 100%) 100% 0 / 320% 100% no-repeat;
+  animation: logo-sweep 11s ease-in-out infinite;
+}
+@keyframes logo-sweep { 0% { background-position: 100% 0; } 38%, 100% { background-position: 0% 0; } }
 body::after {
   content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .3; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -586,4 +593,4 @@ tbody tr:hover { background: var(--row-hover); }
   .topbar { top: 8px; }
   .content { padding-inline: 4px; }
 }
-@media (prefers-reduced-motion: reduce) { body::before { animation: none; } }
+@media (prefers-reduced-motion: reduce) { html::after { animation: none; opacity: 0; } }
