@@ -67,6 +67,7 @@ function makeMap(w, h, r, bezel) {
 function update(el) {
   const entry = tracked.get(el)
   if (!entry) return
+  if (el.matches('.modal') && !el.dataset.lgReady) return // sheets get the lens only after their open animation, so it stays smooth
   const w = Math.round(el.offsetWidth)
   const h = Math.round(el.offsetHeight)
   if (w < 8 || h < 8) return
@@ -101,6 +102,11 @@ function track(el, ro) {
   filter.append(image, displace)
   defs.append(filter)
   tracked.set(el, { id, filter, image, displace, raf: 0 })
+  if (el.matches('.modal')) {
+    el.addEventListener('animationend', (e) => {
+      if (e.target === el && e.animationName === 'modal-in') { el.dataset.lgReady = '1'; update(el) }
+    })
+  }
   ro.observe(el)
 }
 
@@ -119,8 +125,8 @@ export function initLiquidGlass() {
     for (const { target } of entries) {
       const entry = tracked.get(target)
       if (!entry) continue
-      cancelAnimationFrame(entry.raf)
-      entry.raf = requestAnimationFrame(() => update(target))
+      clearTimeout(entry.raf)
+      entry.raf = setTimeout(() => update(target), entry.image.getAttribute('href') ? 150 : 0)
     }
   })
 
@@ -133,7 +139,7 @@ export function initLiquidGlass() {
     for (const [el, entry] of tracked) {
       if (el.isConnected) continue
       ro.unobserve(el)
-      cancelAnimationFrame(entry.raf)
+      clearTimeout(entry.raf)
       entry.filter.remove()
       tracked.delete(el)
     }

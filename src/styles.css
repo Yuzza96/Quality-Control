@@ -363,7 +363,7 @@ tbody tr.clickable:focus-visible { outline: 2px solid var(--accent); outline-off
   --accent: #0a8a86; --accent-ink: #ffffff; --accent-soft: rgba(10, 138, 134, .14);
   --s1: #0a8a86; --s2: #5046e5;
   --radius: 28px;
-  --glass-blur: blur(26px) saturate(185%);
+  --glass-blur: blur(10px) saturate(150%); /* cards sit on a smooth wallpaper, so a light blur looks the same and scrolls far cheaper */
   --glass-hi: inset 0 1px 0 rgba(255, 255, 255, .85), inset 0 -1px 0 rgba(255, 255, 255, .22), inset 1px 0 0 rgba(255, 255, 255, .3), inset -1px 0 0 rgba(255, 255, 255, .15), inset 0 0 18px rgba(255, 255, 255, .18);
   --glass-drop: 0 10px 30px -8px rgba(30, 50, 110, .22), 0 2px 6px rgba(30, 50, 110, .07);
   --glass-drop-lg: 0 30px 80px -20px rgba(20, 35, 90, .38), 0 6px 18px rgba(20, 35, 90, .12);
@@ -380,6 +380,7 @@ tbody tr.clickable:focus-visible { outline: 2px solid var(--accent); outline-off
   --row-hover: rgba(255, 255, 255, .45);
   --edge: rgba(255, 255, 255, .6);
   --scrim: rgba(14, 22, 48, .3);
+  --modal-solid: #eef1f6;
   --ring: rgba(255, 255, 255, .22);
   --ground-a: #f5f7fa; --ground-b: #e0e4eb; --ground-c: #cdd3dd; --logo-tint: rgba(10, 138, 134, .36); --sweep: rgba(255, 255, 255, .85);
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', Inter, 'Segoe UI', system-ui, sans-serif;
@@ -407,6 +408,7 @@ tbody tr.clickable:focus-visible { outline: 2px solid var(--accent); outline-off
   --row-hover: rgba(255, 255, 255, .07);
   --edge: rgba(255, 255, 255, .16);
   --scrim: rgba(0, 4, 14, .5);
+  --modal-solid: #1a2030;
   --ring: rgba(255, 255, 255, .07);
   --ground-a: #161b24; --ground-b: #0b0e14; --ground-c: #05070a; --logo-tint: rgba(60, 201, 195, .3); --sweep: rgba(255, 255, 255, .5);
 }
@@ -422,19 +424,19 @@ html::before {
     radial-gradient(120% 90% at 50% 0%, var(--ground-a), var(--ground-b) 60%, var(--ground-c));
 }
 body { background: transparent; -webkit-font-smoothing: antialiased; letter-spacing: -.011em; }
-body::before, html::after {
-  content: ''; position: fixed; inset: 0; pointer-events: none;
-  -webkit-mask: url('/logo-tight.png') center / min(106vw, 230vh) auto no-repeat; mask: url('/logo-tight.png') center / min(106vw, 230vh) auto no-repeat;
-  filter: blur(9px);
+.wall { position: fixed; inset: 0; z-index: -2; pointer-events: none; opacity: 0; transition: opacity 1.4s var(--ease-out); contain: layout paint; }
+.wall.ready { opacity: 1; }
+.wall-logo, .wall-sweep {
+  position: absolute; left: 50%; top: 50%; width: calc(min(106vw, 230vh) * 1.075); aspect-ratio: var(--logo-ratio, 1720 / 406); transform: translate(-50%, -50%);
+  -webkit-mask: var(--logo-mask) center / 100% 100% no-repeat; mask: var(--logo-mask) center / 100% 100% no-repeat;
 }
-body::before { z-index: -2; background: var(--logo-tint); }
-html::after {
-  z-index: -1; background: linear-gradient(110deg, transparent 0 43%, var(--sweep) 50%, transparent 57% 100%) 100% 0 / 320% 100% no-repeat;
-  animation: logo-sweep 11s ease-in-out infinite;
-}
-@keyframes logo-sweep { 0% { background-position: 100% 0; } 38%, 100% { background-position: 0% 0; } }
+.wall-logo { background: var(--logo-tint); }
+.wall.needs-blur .wall-logo, .wall.needs-blur .wall-sweep { filter: blur(9px); }
+.wall-sweep { overflow: hidden; }
+.wall-sweep i { position: absolute; top: 0; bottom: 0; left: 0; width: 45%; background: linear-gradient(110deg, transparent, var(--sweep) 50%, transparent); transform: translateX(-110%); animation: logo-sweep 11s ease-in-out infinite; will-change: transform; }
+@keyframes logo-sweep { 0% { transform: translateX(-110%); } 38%, 100% { transform: translateX(330%); } }
 body::after {
-  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .3; mix-blend-mode: overlay;
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .08;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
@@ -457,12 +459,12 @@ body::after {
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
 }
 /* specular sheen that follows the pointer (--mx/--my set in App.jsx) */
-.card::after, .btn:not(.ghost)::after {
+.stat::after, .btn:not(.ghost)::after {
   content: ''; position: absolute; inset: 0; border-radius: inherit; z-index: -1; pointer-events: none; opacity: 0;
   background: radial-gradient(300px circle at var(--mx, 50%) var(--my, 0%), var(--sheen), rgba(255, 255, 255, 0) 70%);
   transition: opacity .5s var(--ease-out);
 }
-.card:hover::after, .btn:not(.ghost):hover::after { opacity: 1; }
+.stat:hover::after, .btn:not(.ghost):hover::after { opacity: 1; }
 
 /* layout: everything floats with a gap, nothing touches the screen edge */
 .shell { padding: 12px; gap: 12px; }
@@ -512,9 +514,10 @@ h2 { font-size: 1.05rem; font-weight: 650; letter-spacing: -.02em; }
 .nav-pill, .btn:not(.ghost), .icon-btn {
   -webkit-backdrop-filter: var(--lg,) blur(5px) saturate(190%) brightness(1.04); backdrop-filter: var(--lg,) blur(5px) saturate(190%) brightness(1.04);
 }
-.sidebar, .topbar, .dropdown {
+.sidebar, .dropdown {
   -webkit-backdrop-filter: var(--lg,) var(--glass-blur); backdrop-filter: var(--lg,) var(--glass-blur);
 }
+.topbar { -webkit-backdrop-filter: var(--lg,) blur(20px) saturate(170%); backdrop-filter: var(--lg,) blur(20px) saturate(170%); } /* page content scrolls under it */
 
 /* inputs: inset glass wells */
 .field { background-color: var(--field); border: 0; border-radius: 14px; padding: 10px 14px; box-shadow: var(--field-inset); }
@@ -536,11 +539,10 @@ tbody tr:hover { background: var(--row-hover); }
 .qty { border-radius: 999px; }
 .chip { border-radius: 8px; }
 .table-wrap.rich { border: 0; border-radius: 22px; background: rgba(255, 255, 255, .14); box-shadow: inset 0 0 0 1px var(--edge); }
-.rich thead th { -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%); }
-.rich thead th.s1 { background: color-mix(in srgb, var(--s1) 70%, transparent); }
-.rich thead th.s2 { background: color-mix(in srgb, var(--s2) 70%, transparent); }
-.rich thead th.group-th.g0 { background: color-mix(in srgb, color-mix(in srgb, var(--s1) 78%, #000) 80%, transparent); }
-.rich thead th.group-th.g1 { background: color-mix(in srgb, color-mix(in srgb, var(--s2) 78%, #000) 80%, transparent); }
+.rich thead th.s1 { background: color-mix(in srgb, var(--s1) 90%, transparent); }
+.rich thead th.s2 { background: color-mix(in srgb, var(--s2) 90%, transparent); }
+.rich thead th.group-th.g0 { background: color-mix(in srgb, color-mix(in srgb, var(--s1) 78%, #000) 93%, transparent); }
+.rich thead th.group-th.g1 { background: color-mix(in srgb, color-mix(in srgb, var(--s2) 78%, #000) 93%, transparent); }
 .rich th.divider, .rich td.divider { border-left: 2px solid color-mix(in srgb, var(--s2) 70%, transparent); }
 
 /* menus, toast, scrim */
@@ -558,13 +560,14 @@ tbody tr:hover { background: var(--row-hover); }
 /* sheets (dialogs) */
 .modal {
   border: 1px solid var(--edge); border-radius: 34px; padding: 26px 28px; background: var(--modal-bg); color: var(--text);
-  -webkit-backdrop-filter: var(--lg,) blur(30px) saturate(200%); backdrop-filter: var(--lg,) blur(30px) saturate(200%);
+  -webkit-backdrop-filter: var(--lg,) blur(22px) saturate(180%); backdrop-filter: var(--lg,) blur(22px) saturate(180%);
   box-shadow: var(--glass-hi), var(--glass-drop-lg);
 }
-.modal::backdrop { background: var(--scrim); -webkit-backdrop-filter: blur(16px) saturate(130%); backdrop-filter: blur(16px) saturate(130%); }
+.modal::backdrop { background: var(--scrim); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.modal.closing { --lg: initial !important; } /* no refraction filter while the sheet animates out (liquidGlass.js re-adds it once the open animation ends) */
 .modal[open] { animation: modal-in .6s var(--ease-spring) both; }
 .modal.wide { border-radius: 34px; padding: 0; }
-.modal.wide .modal-head { padding: 20px 28px; background: color-mix(in srgb, var(--card) 70%, transparent); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); border-bottom: 1px solid var(--border); }
+.modal.wide .modal-head { padding: 20px 28px; background: color-mix(in srgb, var(--modal-solid) 88%, transparent); border-bottom: 1px solid var(--border); }
 .modal-head h2 { font-size: 1.3rem; font-weight: 700; letter-spacing: -.03em; }
 
 /* the inspection form, as nested glass groups (outer radius 34 → panel 26 → field 14) */
@@ -583,7 +586,7 @@ tbody tr:hover { background: var(--row-hover); }
 .sectioned .field:hover { background-color: var(--field-focus); }
 .form-panel .field:focus { background-color: var(--field-focus); box-shadow: inset 0 0 0 1px var(--sec), 0 0 0 4px color-mix(in srgb, var(--sec) 24%, transparent); }
 .sectioned .form-field.invalid .field { background-color: var(--red-bg); box-shadow: inset 0 0 0 1px var(--danger), 0 0 0 4px color-mix(in srgb, var(--danger) 22%, transparent); }
-.sectioned .form-actions { padding: 14px 28px; background: color-mix(in srgb, var(--card) 70%, transparent); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); border-top: 1px solid var(--border); }
+.sectioned .form-actions { padding: 14px 28px; background: color-mix(in srgb, var(--modal-solid) 88%, transparent); border-top: 1px solid var(--border); }
 .readonly .field:disabled { background-color: transparent; box-shadow: none; }
 
 @media (max-width: 800px) {
@@ -593,4 +596,4 @@ tbody tr:hover { background: var(--row-hover); }
   .topbar { top: 8px; }
   .content { padding-inline: 4px; }
 }
-@media (prefers-reduced-motion: reduce) { html::after { animation: none; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .wall-sweep { display: none; } }

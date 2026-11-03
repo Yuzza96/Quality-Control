@@ -46,17 +46,22 @@ export default function App() {
     try { localStorage.setItem('theme', theme) } catch {}
   }, [theme])
 
-  // Liquid-glass specular sheen: expose the pointer position to the hovered surface (read by .card::after / .btn::after).
+  // Liquid-glass specular sheen: expose the pointer position to the hovered stat card / button (read by ::after).
+  // Only small elements: a custom property on a big table card would restyle every cell on each move. rAF-throttled.
   useEffect(() => {
-    const move = (e) => {
-      const el = e.target.closest?.('.card, .btn')
+    let raf = 0
+    let last
+    const apply = () => {
+      raf = 0
+      const el = last.target.closest?.('.stat, .btn:not(.ghost)')
       if (!el) return
       const r = el.getBoundingClientRect()
-      el.style.setProperty('--mx', `${e.clientX - r.left}px`)
-      el.style.setProperty('--my', `${e.clientY - r.top}px`)
+      el.style.setProperty('--mx', `${last.clientX - r.left}px`)
+      el.style.setProperty('--my', `${last.clientY - r.top}px`)
     }
+    const move = (e) => { last = e; if (!raf) raf = requestAnimationFrame(apply) }
     document.addEventListener('pointermove', move, { passive: true })
-    return () => document.removeEventListener('pointermove', move)
+    return () => { document.removeEventListener('pointermove', move); cancelAnimationFrame(raf) }
   }, [])
 
   // Circular reveal: the new theme grows out of the toggle button. Only one clip-path animates
