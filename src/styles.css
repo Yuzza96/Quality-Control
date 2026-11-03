@@ -159,7 +159,7 @@ tbody tr:last-child td { border-bottom: 0; }
   border: 1px solid var(--border); border-radius: 20px; padding: 24px; width: min(560px, calc(100vw - 32px));
   background: var(--card); color: var(--text); box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
 }
-.modal::backdrop { background: rgba(10, 12, 20, 0.5); }
+.modal::backdrop { background: rgba(10, 12, 20, 0.5); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
 .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .modal-head h2 { margin: 0; font-size: 1.15rem; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
