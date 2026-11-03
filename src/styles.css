@@ -352,7 +352,7 @@ tbody tr.clickable:focus-visible { outline: 2px solid var(--accent); outline-off
 
 /* ═════════════ iOS 26 "Liquid Glass" ═════════════
    Material = translucent fill + heavy backdrop blur/saturation + specular edge light (inset highlights and a gradient rim)
-   + soft coloured drop shadow, floating over a neutral wallpaper with a giant blurred logo. Small controls are capsules; surfaces use concentric radii.
+   + soft coloured drop shadow, floating over a neutral wallpaper. Small controls are capsules; surfaces use concentric radii.
    Order matters: this section overrides the base tokens above, and the dark block must stay after :root. */
 :root {
   --bg: #dfe3ea;
@@ -382,7 +382,7 @@ tbody tr.clickable:focus-visible { outline: 2px solid var(--accent); outline-off
   --scrim: rgba(14, 22, 48, .3);
   --modal-solid: #eef1f6;
   --ring: rgba(255, 255, 255, .22);
-  --ground-a: #f5f7fa; --ground-b: #e0e4eb; --ground-c: #cdd3dd; --logo-tint: rgba(10, 138, 134, .36); --sweep: rgba(255, 255, 255, .85);
+  --ground-a: #f5f7fa; --ground-b: #e0e4eb; --ground-c: #cdd3dd;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', Inter, 'Segoe UI', system-ui, sans-serif;
 }
 [data-theme='dark'] {
@@ -410,10 +410,10 @@ tbody tr.clickable:focus-visible { outline: 2px solid var(--accent); outline-off
   --scrim: rgba(0, 4, 14, .5);
   --modal-solid: #1a2030;
   --ring: rgba(255, 255, 255, .07);
-  --ground-a: #161b24; --ground-b: #0b0e14; --ground-c: #05070a; --logo-tint: rgba(60, 201, 195, .3); --sweep: rgba(255, 255, 255, .5);
+  --ground-a: #161b24; --ground-b: #0b0e14; --ground-c: #05070a;
 }
 
-/* wallpaper: neutral grey ground + one giant blurred company logo (teal, faded) + a slow light sweep across it + film grain.
+/* wallpaper: neutral grey ground + faint rings + film grain.
    Everything sits behind the glass so the panels have shapes to refract. */
 html { background: var(--bg); }
 html::before {
@@ -424,17 +424,6 @@ html::before {
     radial-gradient(120% 90% at 50% 0%, var(--ground-a), var(--ground-b) 60%, var(--ground-c));
 }
 body { background: transparent; -webkit-font-smoothing: antialiased; letter-spacing: -.011em; }
-.wall { position: fixed; inset: 0; z-index: -2; pointer-events: none; opacity: 0; transition: opacity 1.4s var(--ease-out); contain: layout paint; }
-.wall.ready { opacity: 1; }
-.wall-logo, .wall-sweep {
-  position: absolute; left: 50%; top: 50%; width: calc(min(106vw, 230vh) * 1.075); aspect-ratio: var(--logo-ratio, 1720 / 406); transform: translate(-50%, -50%);
-  -webkit-mask: var(--logo-mask) center / 100% 100% no-repeat; mask: var(--logo-mask) center / 100% 100% no-repeat;
-}
-.wall-logo { background: var(--logo-tint); }
-.wall.needs-blur .wall-logo, .wall.needs-blur .wall-sweep { filter: blur(9px); }
-.wall-sweep { overflow: hidden; }
-.wall-sweep i { position: absolute; top: 0; bottom: 0; left: 0; width: 45%; background: linear-gradient(110deg, transparent, var(--sweep) 50%, transparent); transform: translateX(-110%); animation: logo-sweep 11s ease-in-out infinite; will-change: transform; }
-@keyframes logo-sweep { 0% { transform: translateX(-110%); } 38%, 100% { transform: translateX(330%); } }
 body::after {
   content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .08;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -596,7 +585,6 @@ tbody tr:hover { background: var(--row-hover); }
   .topbar { top: 8px; }
   .content { padding-inline: 4px; }
 }
-@media (prefers-reduced-motion: reduce) { .wall-sweep { display: none; } }
 
 /* sidebar: auto-hiding icon rail (desktop). At rest only the icons show; hover, keyboard focus or the pin opens it.
    The aside is always full width and is revealed with clip-path, so icons never move and nothing reflows. */
