@@ -597,3 +597,56 @@ tbody tr:hover { background: var(--row-hover); }
   .content { padding-inline: 4px; }
 }
 @media (prefers-reduced-motion: reduce) { .wall-sweep { display: none; } }
+
+/* sidebar: auto-hiding icon rail (desktop). At rest only the icons show; hover, keyboard focus or the pin opens it.
+   The aside is always full width and is revealed with clip-path, so icons never move and nothing reflows. */
+.brand-mark, .soon-dot, .pin-btn { display: none; }
+.sidebar-slot { display: contents; }
+@media (min-width: 801px) {
+  .sidebar-slot { display: block; position: relative; z-index: 30; width: 72px; flex-shrink: 0; align-self: stretch; transition: width .45s var(--ease-out); }
+  .sidebar-slot.pinned { width: 268px; }
+  .sidebar {
+    display: flex; flex-direction: column; overflow-x: hidden;
+    clip-path: inset(0 196px 0 0 round 32px);
+    transition: clip-path .5s var(--ease-out) .3s; /* the delay is a grace period before it tucks away */
+  }
+  .sidebar:is(:hover, :has(:focus-visible), .pinned) { clip-path: inset(0 0 0 0 round 32px); transition-delay: .05s; }
+
+  .brand { position: relative; }
+  .brand-mark { display: block; position: absolute; left: 4px; top: 50%; width: 40px; height: 40px; margin-top: -20px; border-radius: 12px; object-fit: contain; transition: opacity .25s var(--ease-out) .1s; }
+  .brand .logo-light, .brand .logo-dark { transition: opacity .3s var(--ease-out); opacity: 0; }
+  .sidebar:is(:hover, :has(:focus-visible), .pinned) .brand-mark { opacity: 0; transition-delay: 0s; }
+  .sidebar:is(:hover, :has(:focus-visible), .pinned) .brand :is(.logo-light, .logo-dark) { opacity: 1; transition-delay: .12s; }
+
+  /* labels slide in one after another */
+  .sidebar :is(.nav-text, .soon) { opacity: 0; transform: translateX(-10px); transition: opacity .15s linear, transform .15s linear; }
+  .sidebar:is(:hover, :has(:focus-visible), .pinned) :is(.nav-text, .soon) {
+    opacity: 1; transform: none;
+    transition: opacity .3s var(--ease-out) calc(var(--i, 0) * 22ms + 90ms), transform .45s var(--ease-out) calc(var(--i, 0) * 22ms + 90ms);
+  }
+  .pin-btn { --i: 9; }
+
+  /* section headings shrink to little dividers; "Soon" becomes an amber dot on the icon */
+  .sidebar .nav-label { position: relative; color: transparent; transition: color .2s var(--ease-out); }
+  .sidebar .nav-label::after { content: ''; position: absolute; left: 14px; top: 62%; width: 20px; height: 2px; border-radius: 2px; background: var(--muted); opacity: .35; transition: opacity .2s var(--ease-out); }
+  .sidebar:is(:hover, :has(:focus-visible), .pinned) .nav-label { color: var(--muted); }
+  .sidebar:is(:hover, :has(:focus-visible), .pinned) .nav-label::after { opacity: 0; }
+  .soon-dot { display: block; position: absolute; left: 33px; top: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--amber); transition: opacity .2s var(--ease-out); }
+  .sidebar:is(:hover, :has(:focus-visible), .pinned) .soon-dot { opacity: 0; }
+
+  /* the highlight pill squeezes into a tile around the active icon */
+  .sidebar .nav-pill { right: auto; width: 48px; }
+  .sidebar .nav-pill.animated { transition: transform .5s var(--ease-out), height .5s var(--ease-out), width .45s var(--ease-out); }
+  .sidebar:is(:hover, :has(:focus-visible), .pinned) .nav-pill { width: 100%; }
+
+  .pin-btn {
+    display: flex; align-items: center; gap: 12px; margin-top: auto; padding: 11px 14px; border: 0; border-radius: 18px;
+    background: none; color: var(--muted); font-weight: 600; text-align: left; white-space: nowrap;
+    transition: background-color var(--t-fast) var(--ease-out), color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-spring);
+  }
+  .pin-btn:hover { background: var(--row-hover); color: var(--text); }
+  .pin-btn:active { transform: scale(.95); }
+  .pin-btn[aria-pressed='true'] { color: var(--accent); }
+  .pin-btn svg { flex-shrink: 0; transform: rotate(45deg); transition: transform var(--t-med) var(--ease-spring); }
+  .pin-btn[aria-pressed='true'] svg { transform: none; }
+}
