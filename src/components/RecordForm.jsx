@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { STATUS_TONE } from '../data/data.js'
 
 // fields: [{ name, label, type: 'text'|'date'|'number'|'select'|'textarea', options, required, wide }]
 export default function RecordForm({ fields, initial, submitLabel, onSubmit, onCancel, readOnly, onEdit }) {
@@ -32,7 +33,20 @@ export default function RecordForm({ fields, initial, submitLabel, onSubmit, onC
   }
   const sectioned = sections.some((s) => s.heading)
 
-  const renderField = (f) => (
+  // Read-only view: values as plain text (statuses as badges) so the sheet reads like an inset list
+  const renderValue = (f) => {
+    const v = String(values[f.name] ?? '').trim()
+    if (!v) return <span className="ro-value empty">—</span>
+    const tone = f.type === 'select' && STATUS_TONE[v]
+    return <span className="ro-value">{tone ? <span className={`badge ${tone}`}>{v}</span> : v}</span>
+  }
+
+  const renderField = (f) => readOnly ? (
+    <div key={f.name} className={`form-field ${f.wide ? 'wide' : ''}`}>
+      <span>{f.label}</span>
+      {renderValue(f)}
+    </div>
+  ) : (
     <label key={f.name} className={`form-field ${f.wide ? 'wide' : ''} ${errors[f.name] ? 'invalid' : ''}`}>
       <span>{f.label}{f.required && <b aria-hidden="true"> *</b>}</span>
       {f.type === 'select' ? (
