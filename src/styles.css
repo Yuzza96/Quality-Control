@@ -613,9 +613,9 @@ tbody tr:hover { background: var(--row-hover); }
   .sidebar:is(:hover, :has(:focus-visible), .pinned) { clip-path: inset(0 0 0 0 round 32px); transition-delay: .05s; }
 
   .brand { position: relative; }
-  .brand-mark { display: block; position: absolute; left: 4px; top: 50%; width: 40px; height: 40px; margin-top: -20px; border-radius: 12px; object-fit: contain; transition: opacity .25s var(--ease-out) .1s; }
+  .brand .brand-mark { display: block; position: absolute; left: 4px; top: 50%; width: 40px; height: 40px; margin-top: -20px; border-radius: 12px; object-fit: contain; transition: opacity .25s var(--ease-out) .1s; }
   .brand .logo-light, .brand .logo-dark { transition: opacity .3s var(--ease-out); opacity: 0; }
-  .sidebar:is(:hover, :has(:focus-visible), .pinned) .brand-mark { opacity: 0; transition-delay: 0s; }
+  .sidebar:is(:hover, :has(:focus-visible), .pinned) .brand .brand-mark { opacity: 0; transition-delay: 0s; }
   .sidebar:is(:hover, :has(:focus-visible), .pinned) .brand :is(.logo-light, .logo-dark) { opacity: 1; transition-delay: .12s; }
 
   /* labels slide in one after another */
