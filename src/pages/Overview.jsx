@@ -5,8 +5,8 @@ import { INSPECTION_STATUSES } from '../data/data.js'
 
 // Recharts takes literal colors, so keep both themes here (mirrors styles.css).
 const COLORS = {
-  light: { accent: '#0a7471', grid: '#e6e8ef', text: '#6b7280', card: '#ffffff', ink: '#1b1e2b', Accepted: '#16a34a', 'On Hold': '#f59e0b', Rejected: '#ef4444' },
-  dark: { accent: '#2bb5b0', grid: '#272b38', text: '#8b91a3', card: '#181b24', ink: '#e8eaf1', Accepted: '#4ade80', 'On Hold': '#fbbf24', Rejected: '#f87171' },
+  light: { accent: '#0a8a86', grid: 'rgba(15,23,42,.1)', text: '#4f5d75', card: 'rgba(255,255,255,.72)', ink: '#0c1424', Accepted: '#16a34a', 'On Hold': '#f59e0b', Rejected: '#ef4444' },
+  dark: { accent: '#3cc9c3', grid: 'rgba(255,255,255,.1)', text: '#9ba8c0', card: 'rgba(28,36,60,.74)', ink: '#f3f6fc', Accepted: '#4ade80', 'On Hold': '#fbbf24', Rejected: '#f87171' },
 }
 const monthName = (ym) => new Date(`${ym}-01T00:00:00`).toLocaleString('en', { month: 'short' })
 
@@ -44,7 +44,7 @@ export default function Overview({ inspections, ncs, theme }) {
     }
   }, [inspections, ncs])
 
-  const tooltip = { background: c.card, border: `1px solid ${c.grid}`, borderRadius: 12, color: c.ink }
+  const tooltip = { background: c.card, border: `1px solid ${c.grid}`, borderRadius: 16, color: c.ink, backdropFilter: 'blur(18px) saturate(180%)', WebkitBackdropFilter: 'blur(18px) saturate(180%)' }
   const lo = Math.floor(Math.min(...trend.map((t) => t.rate), 100) - 2)
 
   return (

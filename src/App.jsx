@@ -46,6 +46,19 @@ export default function App() {
     try { localStorage.setItem('theme', theme) } catch {}
   }, [theme])
 
+  // Liquid-glass specular sheen: expose the pointer position to the hovered surface (read by .card::after / .btn::after).
+  useEffect(() => {
+    const move = (e) => {
+      const el = e.target.closest?.('.card, .btn')
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      el.style.setProperty('--mx', `${e.clientX - r.left}px`)
+      el.style.setProperty('--my', `${e.clientY - r.top}px`)
+    }
+    document.addEventListener('pointermove', move, { passive: true })
+    return () => document.removeEventListener('pointermove', move)
+  }, [])
+
   // Circular reveal: the new theme grows out of the toggle button. Only one clip-path animates
   // (View Transitions API), so nothing re-paints piecemeal. Falls back to an instant switch.
   const toggleTheme = (e) => {

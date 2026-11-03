@@ -21,10 +21,10 @@ Quality Control dashboard for manufacturing staff: record inspections and noncon
 - `src/components/RecordsPage.jsx` — shared list page (search, status + date-range filters, CSV export, add dialog). Rows are clickable (mouse or Enter/Space) and open the record read-only; "Edit record" unlocks the same form pre-filled; pages pass `onUpdate(id, values)` from `App.jsx`. Report pages only supply columns, form fields and an `onAdd`.
 - `src/components/` — `Modal` (native `<dialog>`), `RecordForm` (validation), `Sidebar`, `Topbar`, `StatCard`.
 - `src/utils.js` — CSV export, `today()`.
-- `src/styles.css` — single stylesheet; theme via CSS variables with `data-theme="dark|light"` on `<html>`.
+- `src/styles.css` — single stylesheet; theme via CSS variables with `data-theme="dark|light"` on `<html>`. The **iOS 26 Liquid Glass** layer is the last section ("iOS 26 Liquid Glass"): it redefines the tokens (`--card` is translucent, `--glass-*`, `--rim-*`, `--field*`), draws the wallpaper on `body::before/::after`, and overrides surfaces/controls. Keep its dark `[data-theme]` block after its `:root`. `index.html` holds the `#lg-refract` SVG filter; `App.jsx` tracks the pointer for the `.card`/`.btn` sheen (`--mx/--my`).
 
 ## Conventions
-- One accent color: teal sampled from the MIT Technologies logo (`#0a7471` light, `#2bb5b0` dark). Green/amber/red are reserved for status badges and chart status colors, so teal ≠ "success".
+- One accent color: teal derived from the MIT Technologies logo (`#0a8a86` light, `#3cc9c3` dark). Green/amber/red are reserved for status badges and chart status colors, so teal ≠ "success".
 - Branding assets live in `public/`: `Logo.png` (original), `logo-tight.png` (cropped, light-mode sidebar), `logo-tight-dark.png` (same logo recolored for dark mode: light wordmark, `#2bb5b0` teal, transparent), `favicon.png`. If the logo changes, regenerate both tight versions.
 - **Workflow: commit and push to `main` after every set of changes** (this deploys to GitHub Pages).
 - Recharts needs literal colors, so `Overview.jsx` has a light/dark `COLORS` map that mirrors `styles.css` — update both together.
