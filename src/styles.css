@@ -598,9 +598,9 @@ tbody tr:hover { background: var(--row-hover); }
 }
 @media (prefers-reduced-motion: reduce) { .wall-sweep { display: none; } }
 
-/* sidebar: auto-hiding icon rail (desktop). At rest only the icons show; hover, keyboard focus or the pin opens it.
+/* sidebar: auto-hiding icon rail (desktop). The logo lives in the topbar; the rail sits under it. At rest only the icons show; hover, keyboard focus or the pin opens it.
    The aside is always full width and is revealed with clip-path, so icons never move and nothing reflows. */
-.brand-mark, .soon-dot, .pin-btn { display: none; }
+.soon-dot, .pin-btn { display: none; }
 .sidebar-slot { display: contents; }
 @media (min-width: 801px) {
   .sidebar-slot { display: block; position: relative; z-index: 30; width: 72px; flex-shrink: 0; align-self: stretch; transition: width .45s var(--ease-out); }
@@ -612,11 +612,6 @@ tbody tr:hover { background: var(--row-hover); }
   }
   .sidebar:is(:hover, :has(:focus-visible), .pinned) { clip-path: inset(0 0 0 0 round 32px); transition-delay: .05s; }
 
-  .brand { position: relative; }
-  .brand .brand-mark { display: block; position: absolute; left: 4px; top: 5px; width: 40px; height: 40px; border-radius: 12px; object-fit: contain; transition: opacity .25s var(--ease-out) .1s; }
-  .brand .logo-light, .brand .logo-dark { transition: opacity .3s var(--ease-out); opacity: 0; }
-  .sidebar:is(:hover, :has(:focus-visible), .pinned) .brand .brand-mark { opacity: 0; transition-delay: 0s; }
-  .sidebar:is(:hover, :has(:focus-visible), .pinned) .brand :is(.logo-light, .logo-dark) { opacity: 1; transition-delay: .12s; }
 
   /* labels slide in one after another */
   .sidebar :is(.nav-text, .soon) { opacity: 0; transform: translateX(-10px); transition: opacity .15s linear, transform .15s linear; }
@@ -650,3 +645,23 @@ tbody tr:hover { background: var(--row-hover); }
   .pin-btn svg { flex-shrink: 0; transform: rotate(45deg); transition: transform var(--t-med) var(--ease-spring); }
   .pin-btn[aria-pressed='true'] svg { transform: none; }
 }
+
+/* one frame: the topbar spans the full width and the rail tucks underneath it, so the two bars never overlap */
+.top-logo { display: none; }
+@media (min-width: 801px) {
+  .shell { --bar-h: 56px; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto 1fr; align-items: start; }
+  .main { display: contents; }
+  .topbar { grid-column: 1 / -1; grid-row: 1; height: var(--bar-h); box-sizing: border-box; }
+  .sidebar-slot { grid-column: 1; grid-row: 2; align-self: stretch; }
+  .content { grid-column: 2; grid-row: 2; }
+  .sidebar { top: calc(24px + var(--bar-h)); height: calc(100vh - 36px - var(--bar-h)); }
+  .sidebar .brand, .topbar .menu-btn { display: none; }
+  .top-logo { display: block; height: 28px; width: auto; margin: 0 14px 0 6px; }
+  .top-logo.dark, [data-theme='dark'] .top-logo.light { display: none; }
+  [data-theme='dark'] .top-logo.dark { display: block; }
+}
+@media (max-width: 800px) {
+  .shell { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .main { display: contents; }
+}
+

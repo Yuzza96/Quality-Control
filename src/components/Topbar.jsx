@@ -22,6 +22,8 @@ export default function Topbar({ query, onQuery, theme, onToggleTheme, onMenu })
       <button className="icon-btn menu-btn" onClick={onMenu} aria-label="Open navigation">
         <Icon d="M4 6h16M4 12h16M4 18h16" />
       </button>
+      <img className="top-logo light" src={`${import.meta.env.BASE_URL}logo-tight.png`} alt="MIT Technologies" />
+      <img className="top-logo dark" src={`${import.meta.env.BASE_URL}logo-tight-dark.png`} alt="" aria-hidden="true" />
       <label className="search">
         <Icon d="M11 18a7 7 0 100-14 7 7 0 000 14zM21 21l-5-5" size={18} />
         <input value={query} onChange={(e) => onQuery(e.target.value)} placeholder="Search…" />

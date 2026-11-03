@@ -50,7 +50,6 @@ export default function Sidebar({ nav, active, open, onNavigate, onClose }) {
       <div className={`sidebar-slot ${pinned ? 'pinned' : ''}`}>
         <aside className={`sidebar ${open ? 'open' : ''} ${pinned ? 'pinned' : ''}`}>
           <div className="brand">
-            <img className="brand-mark" src={`${import.meta.env.BASE_URL}favicon.png`} alt="" aria-hidden="true" />
             <img className="logo-light" src={`${import.meta.env.BASE_URL}logo-tight.png`} alt="MIT Technologies" />
             <img className="logo-dark" src={`${import.meta.env.BASE_URL}logo-tight-dark.png`} alt="" aria-hidden="true" />
           </div>
