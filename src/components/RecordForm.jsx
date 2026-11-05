@@ -53,6 +53,12 @@ export default function RecordForm({ fields, initial, submitLabel, onSubmit, onC
         <select className="field" value={values[f.name]} onChange={(e) => set(f.name, e.target.value)}>
           {f.options.map((o) => <option key={o} value={o}>{o || '— None —'}</option>)}
         </select>
+      ) : f.type === 'combo' ? (
+        <>
+          <input className="field" type="text" list={`dl-${f.name}`} autoComplete="off" placeholder={f.placeholder || 'Type a name'}
+            value={values[f.name]} onChange={(e) => set(f.name, e.target.value)} />
+          <datalist id={`dl-${f.name}`}>{f.options.map((o) => <option key={o} value={o} />)}</datalist>
+        </>
       ) : f.type === 'textarea' ? (
         <textarea className="field" rows="3" value={values[f.name]} onChange={(e) => set(f.name, e.target.value)} />
       ) : (

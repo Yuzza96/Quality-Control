@@ -42,7 +42,7 @@ const groups = [
 const formFields = [
   { type: 'heading', label: 'Route Card Information', tone: 's1' },
   { name: 'date', label: 'Date IN', type: 'date', required: true },
-  { name: 'sender', label: 'Sender by', type: 'select', options: INSPECTORS },
+  { name: 'sender', label: 'Sender by', type: 'combo', options: INSPECTORS },
   { name: 'routeCard', label: 'Route Card', type: 'text', required: true, placeholder: 'RC-0000' },
   { name: 'po', label: 'PO No', type: 'text', required: true, placeholder: 'PO-00000' },
   { name: 'part', label: 'Part Name', type: 'text', required: true, wide: true },
@@ -54,7 +54,7 @@ const formFields = [
   { name: 'rcStatus', label: 'Status', type: 'select', options: ROUTE_CARD_STATUSES },
   { type: 'heading', label: 'Inspection Record', tone: 's2' },
   { name: 'inspectionDate', label: 'Inspection Date', type: 'date', required: true },
-  { name: 'inspector', label: 'Inspected By.', type: 'select', options: INSPECTORS },
+  { name: 'inspector', label: 'Inspected By.', type: 'combo', options: INSPECTORS },
   { name: 'status', label: 'Inspection Status', type: 'select', options: INSPECTION_STATUSES },
   { name: 'qtyOk', label: 'Quantity OK', type: 'number', required: true },
   { name: 'qtyNg', label: 'Quantity NG', type: 'number', required: true },
@@ -81,9 +81,9 @@ export default function InspectionReport({ rows, onAdd, onUpdate, globalQuery })
       addLabel="New Inspection"
       formFields={formFields}
       formInitial={() => ({
-        date: today(), sender: INSPECTORS[0], routeCard: '', po: '', part: '', partId: '', rfm: '', model: '',
+        date: today(), sender: '', routeCard: '', po: '', part: '', partId: '', rfm: '', model: '',
         quantity: '', nextProcess: '', rcStatus: 'Pending',
-        inspectionDate: today(), inspector: INSPECTORS[0], status: 'Accepted', qtyOk: '', qtyNg: '0', short: '0', rejected: '0',
+        inspectionDate: today(), inspector: '', status: 'Accepted', qtyOk: '', qtyNg: '0', short: '0', rejected: '0',
         ncr: '', ncrStatus: '', finalStatus: 'Open', igt: '', remark: '',
       })}
       onUpdate={onUpdate}

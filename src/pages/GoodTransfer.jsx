@@ -21,7 +21,7 @@ const formFields = [
   { name: 'from', label: 'From', type: 'select', options: DEPARTMENTS },
   { name: 'to', label: 'To', type: 'select', options: DEPARTMENTS },
   { name: 'qty', label: 'Qty', type: 'number', required: true },
-  { name: 'transferredBy', label: 'Transferred By', type: 'select', options: INSPECTORS },
+  { name: 'transferredBy', label: 'Transferred By', type: 'combo', options: INSPECTORS },
   { name: 'remark', label: 'Remark', type: 'textarea', wide: true },
 ]
 
@@ -37,7 +37,7 @@ export default function GoodTransfer({ rows, onAdd, onUpdate, globalQuery }) {
       csvName="internal-good-transfer.csv"
       addLabel="New Transfer"
       formFields={formFields}
-      formInitial={() => ({ date: today(), status: 'Pending', part: '', from: DEPARTMENTS[0], to: DEPARTMENTS[1], qty: '', transferredBy: INSPECTORS[0], remark: '' })}
+      formInitial={() => ({ date: today(), status: 'Pending', part: '', from: DEPARTMENTS[0], to: DEPARTMENTS[1], qty: '', transferredBy: '', remark: '' })}
       onUpdate={onUpdate}
       onAdd={(v) => onAdd({ id: nextTransferId(rows), ...v })}
     />
